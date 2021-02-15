@@ -16,6 +16,12 @@ void AWaveGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!WaveDataTable)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Wave Data table not found!"));
+		return;
+	}
+
 	PrepareForNextWave();
 }
 
@@ -86,8 +92,37 @@ void AWaveGameMode::BeginToSpawnEnemy()
 
 FWaveInfoTable* AWaveGameMode::GetWaveInfo(int32 wave)
 {
+	if (!WaveDataTable)
+		return nullptr;
+
 	static const FString contextString(TEXT(""));
 	return WaveDataTable->FindRow<FWaveInfoTable>(FName(FString::FromInt(wave)), contextString, true);
+}
+
+int32 AWaveGameMode::GetNumberOfWaves() const
+{
+	if (!WaveDataTable)
+		return -1;
+
+	return WaveDataTable->GetRowNames().Num();
+}
+
+int32 AWaveGameMode::GetTotalAmountOfEnemies(int32 wave)
+{
+	if (!WaveDataTable)
+		return 0;
+
+	FWaveInfoTable* WaveInfo = GetWaveInfo(wave);
+	if (!WaveInfo)
+		return -1;
+
+	int32 total = 0;
+	for (auto EnemySection : WaveInfo->EnemiesList)
+	{
+		total += EnemySection.AmountToSpawn;
+	}
+
+	return total;
 }
 
 

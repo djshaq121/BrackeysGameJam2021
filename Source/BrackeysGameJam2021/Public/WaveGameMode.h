@@ -14,7 +14,7 @@
 class UDataTable;
 
 USTRUCT(BlueprintType)
-struct FEnemyInfoC
+struct FEnemyInfo
 {
 	GENERATED_BODY()
 
@@ -34,13 +34,21 @@ struct FWaveInfoTable : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Wave")
-	TArray<FEnemyInfoC> EnemiesList;
+	TArray<FEnemyInfo> EnemiesList;
 };
 
 UCLASS()
 class BRACKEYSGAMEJAM2021_API AWaveGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+
+	UFUNCTION(BlueprintCallable, Category = "GameMode")
+		int32 GetNumberOfWaves() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GameMode")
+		int32 GetTotalAmountOfEnemies(int32 wave);
 	
 protected:
 
