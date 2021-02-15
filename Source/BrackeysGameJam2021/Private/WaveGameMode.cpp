@@ -3,6 +3,7 @@
 
 #include "WaveGameMode.h"
 #include "TimerManager.h"
+#include "Blueprint/UserWidget.h"
 #include "Engine/DataTable.h"
 
 
@@ -29,6 +30,18 @@ void AWaveGameMode::BeginPlay()
 		return;
 	}
 
+	// Create the widget
+	if (HUDWaveSystemClass)
+	{
+		WaveSystemWidget = CreateWidget<UUserWidget>(GetWorld(), HUDWaveSystemClass);
+		if (WaveSystemWidget)
+		{
+			WaveSystemWidget->AddToViewport();
+		}
+	}
+
+	WaveStatus = EWaveStatus::HasNotStarted;
+
 	EnemiesEscaped = 0;
 	PrepareForNextWave();
 }
@@ -41,7 +54,24 @@ void AWaveGameMode::Tick(float DeltaSeconds)
 
 void AWaveGameMode::PrepareForNextWave()
 {
-	GetWorldTimerManager().SetTimer(NextWaveTimerHandle, this, &AWaveGameMode::StartWave, TimeForNextWave, false , 2.f);
+	if (bGameIsOver)
+		return;
+
+	WaveStatus = EWaveStatus::Preparing; 
+
+	WaveRound++;
+	EnemiesLeft = GetTotalAmountOfEnemies(WaveRound);
+
+	// We need to set the timer before the widget updates for NextWaveTimerHandle
+	GetWorldTimerManager().SetTimer(NextWaveTimerHandle, this, &AWaveGameMode::StartWave, TimeForNextWave, false);
+
+	//Update HUD elements
+	UpdateOnPrepareForWave();
+	UpdateWaveWidget(WaveRound, GetNumberOfWaves());
+	UpdateEnemiesLeftWidget(EnemiesLeft);
+	UpdateChancesLeftWidget(GetTotalChances() - EnemiesEscaped);
+	//UpdateCurrencyWidget
+
 }
 
 void AWaveGameMode::StartWave()
@@ -50,12 +80,10 @@ void AWaveGameMode::StartWave()
 	if (bGameIsOver)
 		return;
 
-	WaveRound++;
-	
+	WaveStatus = EWaveStatus::WaveActive;
+	UpdateWidgetOnWaveStart();
 	CurrentWaveInfo = FetchWaveInfo(WaveRound);
 	EnemySectionIndex = 0;
-	EnemiesLeft = GetTotalAmountOfEnemies(WaveRound);
-
 	GetWorldTimerManager().SetTimer(EnemySpawnerTimerHandle, this, &AWaveGameMode::BeginToSpawnEnemy, 1.0f, true, 0.0f);
 }
 
@@ -71,7 +99,8 @@ void AWaveGameMode::EndWave()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("All Waves complete"));
+		WaveStatus = EWaveStatus::LevelWon;
+		bGameIsOver = true;
 	}
 
 }
@@ -84,7 +113,6 @@ void AWaveGameMode::BeginToSpawnEnemy()
 	if (CurrentWaveInfo->EnemiesList.Num() == 0 || EnemySectionIndex > CurrentWaveInfo->EnemiesList.Num() - 1)
 	{
 		StopSpawningEnemies();
-		//EndWave();
 		return;
 	}
 
@@ -173,11 +201,13 @@ void AWaveGameMode::EnemyEscaped()
 {
 	EnemiesEscaped++;
 
+	UpdateChancesLeftWidget(FMath::Clamp(GetTotalChances() - EnemiesEscaped,0, INT_MAX));
 	if (GetTotalChances() < EnemiesEscaped)
 	{
 		// Game is over
-		UE_LOG(LogTemp, Warning, TEXT("Game Over"));
+		WaveStatus = EWaveStatus::LevelLost;
 		bGameIsOver = true;
+
 		return;
 	}
 
@@ -191,11 +221,26 @@ void AWaveGameMode::UpdateEnemiesAlive()
 
 	EnemiesLeft--;
 
+	UpdateEnemiesLeftWidget(EnemiesLeft);
 	if (EnemiesLeft <= 0)
 	{
-		UE_LOG(LogTemp, Error, TEXT("All Enemies are dead - start next wave"));
+		UE_LOG(LogTemp, Error, TEXT("All Enemies are dead - End wave"));
 		EndWave();
 	}
 
 }
 
+// Only When in preparing Phase the user can start the wave straight away
+void AWaveGameMode::StartWaveImmediately()
+{
+	if (bGameIsOver)
+		return;
+
+	if (WaveStatus == EWaveStatus::Preparing)
+	{
+		// Reset timer as it will start wave again
+		GetWorldTimerManager().ClearTimer(NextWaveTimerHandle);
+		StartWave();
+	}
+
+}

@@ -7,7 +7,9 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "TimerManager.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "WaveGameMode.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ABrackeysGameJam2021Character
@@ -57,6 +59,9 @@ void ABrackeysGameJam2021Character::SetupPlayerInputComponent(class UInputCompon
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAction("StartWave", IE_Pressed, this, &ABrackeysGameJam2021Character::StartWavePressed);
+	PlayerInputComponent->BindAction("StartWave", IE_Released, this, &ABrackeysGameJam2021Character::StartWaveReleased);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &ABrackeysGameJam2021Character::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ABrackeysGameJam2021Character::MoveRight);
 
@@ -76,6 +81,29 @@ void ABrackeysGameJam2021Character::SetupPlayerInputComponent(class UInputCompon
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ABrackeysGameJam2021Character::OnResetVR);
 }
 
+void ABrackeysGameJam2021Character::StartWavePressed()
+{
+	HoldTime = 0;
+	bIsHoldingDownStartWaveAction = true;
+}
+
+void ABrackeysGameJam2021Character::StartWaveReleased()
+{
+	bIsHoldingDownStartWaveAction = false;
+	if (HoldTime >= 1.5f)
+	{
+		AWaveGameMode* GameMode = Cast<AWaveGameMode>(GetWorld()->GetAuthGameMode());
+		GameMode->StartWaveImmediately();
+	}
+}
+
+void ABrackeysGameJam2021Character::Tick(float DeltaSecond)
+{
+	Super::Tick(DeltaSecond);
+
+	if(bIsHoldingDownStartWaveAction)
+		HoldTime += DeltaSecond;
+}
 
 void ABrackeysGameJam2021Character::OnResetVR()
 {
