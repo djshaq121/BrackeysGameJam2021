@@ -22,6 +22,14 @@ void AWaveGameMode::BeginPlay()
 		return;
 	}
 
+	CurrentLevelInfo = FetchLevelInfo(CurrentLevelName);
+	if (!CurrentLevelInfo)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Level Info Not found!"));
+		return;
+	}
+
+	EnemiesEscaped = 0;
 	PrepareForNextWave();
 }
 
@@ -40,7 +48,7 @@ void AWaveGameMode::StartWave()
 {
 	WaveRound++;
 	
-	CurrentWaveInfo = GetWaveInfo(WaveRound);
+	CurrentWaveInfo = FetchWaveInfo(WaveRound);
 	EnemySectionIndex = 0;
 
 	GetWorldTimerManager().SetTimer(EnemySpawnerTimerHandle, this, &AWaveGameMode::BeginToSpawnEnemy, 1.0f, true, 0.0f);
@@ -50,9 +58,8 @@ void AWaveGameMode::EndWave()
 {
 	GetWorldTimerManager().ClearTimer(EnemySpawnerTimerHandle);
 	
-
 	// For now just check if there is any more waves
-	FWaveInfoTable* NextWaveInfo = GetWaveInfo(WaveRound + 1);
+	FWaveInfo* NextWaveInfo = FetchWaveInfo(WaveRound + 1);
 	if (NextWaveInfo)
 	{
 		PrepareForNextWave();
@@ -71,7 +78,7 @@ void AWaveGameMode::BeginToSpawnEnemy()
 
 	if (CurrentWaveInfo->EnemiesList.Num() == 0 || EnemySectionIndex > CurrentWaveInfo->EnemiesList.Num() - 1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No More enemies for this Waves"));
+		//UE_LOG(LogTemp, Warning, TEXT("No More enemies for this Waves"));
 		EndWave();
 		return;
 	}
@@ -83,28 +90,42 @@ void AWaveGameMode::BeginToSpawnEnemy()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Next section"));
+		//UE_LOG(LogTemp, Warning, TEXT("Next section"));
 		EnemiesSpawned = 0;
 		EnemySectionIndex++;
 		BeginToSpawnEnemy();
 	}
 }
 
-FWaveInfoTable* AWaveGameMode::GetWaveInfo(int32 wave)
+FWaveInfo* AWaveGameMode::FetchWaveInfo(int32 wave)
+{
+	if (!WaveDataTable)
+		return nullptr;
+
+	if (!CurrentLevelInfo)
+		return nullptr;
+
+	if (CurrentLevelInfo->WaveInfo.Num() <= 0 || wave > CurrentLevelInfo->WaveInfo.Num())
+		return nullptr;
+
+	return &CurrentLevelInfo->WaveInfo[wave - 1];
+}
+
+FLevelInfo* AWaveGameMode::FetchLevelInfo(FName levelName)
 {
 	if (!WaveDataTable)
 		return nullptr;
 
 	static const FString contextString(TEXT(""));
-	return WaveDataTable->FindRow<FWaveInfoTable>(FName(FString::FromInt(wave)), contextString, true);
+	return WaveDataTable->FindRow<FLevelInfo>(CurrentLevelName, contextString, true);
 }
 
 int32 AWaveGameMode::GetNumberOfWaves() const
 {
-	if (!WaveDataTable)
+	if (!CurrentLevelInfo)
 		return -1;
 
-	return WaveDataTable->GetRowNames().Num();
+	return CurrentLevelInfo->WaveInfo.Num();
 }
 
 int32 AWaveGameMode::GetTotalAmountOfEnemies(int32 wave)
@@ -112,7 +133,7 @@ int32 AWaveGameMode::GetTotalAmountOfEnemies(int32 wave)
 	if (!WaveDataTable)
 		return 0;
 
-	FWaveInfoTable* WaveInfo = GetWaveInfo(wave);
+	FWaveInfo* WaveInfo = FetchWaveInfo(wave);
 	if (!WaveInfo)
 		return -1;
 
@@ -125,5 +146,30 @@ int32 AWaveGameMode::GetTotalAmountOfEnemies(int32 wave)
 	return total;
 }
 
+int32 AWaveGameMode::GetTotalChances()
+{
+	if (!CurrentLevelInfo)
+		return -1;
 
+	return CurrentLevelInfo->TotalChances;
+}
+
+int32 AWaveGameMode::GetEnemiesEscaped() const
+{
+	return EnemiesEscaped;
+}
+
+void AWaveGameMode::EnemyEscaped()
+{
+	EnemiesEscaped++;
+
+	if (GetTotalChances() < EnemiesEscaped)
+	{
+		// Game is over
+		UE_LOG(LogTemp, Warning, TEXT("Game Over"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("One Esacped"));
+}
 
