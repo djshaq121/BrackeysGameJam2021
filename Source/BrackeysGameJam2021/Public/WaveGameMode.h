@@ -71,6 +71,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GameMode")
 	void EnemyEscaped();
+
+	UFUNCTION(BlueprintCallable, Category = "GameMode")
+	void StopSpawningEnemies();
+
+	UFUNCTION(BlueprintCallable, Category = "GameMode")
+	void UpdateEnemiesAlive();
 	
 protected:
 
@@ -105,7 +111,7 @@ protected:
 	FTimerHandle NextWaveTimerHandle;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode")
-	float TimeForNextWave = 2;
+	float TimeForNextWave = 20.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode")
 	UDataTable* WaveDataTable;
@@ -117,10 +123,14 @@ protected:
 
 	int32 EnemiesSpawned = 0;
 
+	// Enemies that have not died yet
+	int32 EnemiesLeft = 0;
+
 	FWaveInfo* CurrentWaveInfo;
 
 	FLevelInfo* CurrentLevelInfo;
 
 	int32 EnemiesEscaped = 0;
 
+	bool bGameIsOver = false;
 };

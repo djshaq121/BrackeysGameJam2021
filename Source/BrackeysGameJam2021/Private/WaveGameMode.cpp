@@ -46,10 +46,15 @@ void AWaveGameMode::PrepareForNextWave()
 
 void AWaveGameMode::StartWave()
 {
+	UE_LOG(LogTemp, Error, TEXT("Begin Wave"));
+	if (bGameIsOver)
+		return;
+
 	WaveRound++;
 	
 	CurrentWaveInfo = FetchWaveInfo(WaveRound);
 	EnemySectionIndex = 0;
+	EnemiesLeft = GetTotalAmountOfEnemies(WaveRound);
 
 	GetWorldTimerManager().SetTimer(EnemySpawnerTimerHandle, this, &AWaveGameMode::BeginToSpawnEnemy, 1.0f, true, 0.0f);
 }
@@ -78,8 +83,8 @@ void AWaveGameMode::BeginToSpawnEnemy()
 
 	if (CurrentWaveInfo->EnemiesList.Num() == 0 || EnemySectionIndex > CurrentWaveInfo->EnemiesList.Num() - 1)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("No More enemies for this Waves"));
-		EndWave();
+		StopSpawningEnemies();
+		//EndWave();
 		return;
 	}
 
@@ -95,6 +100,11 @@ void AWaveGameMode::BeginToSpawnEnemy()
 		EnemySectionIndex++;
 		BeginToSpawnEnemy();
 	}
+}
+
+void AWaveGameMode::StopSpawningEnemies()
+{
+	GetWorldTimerManager().ClearTimer(EnemySpawnerTimerHandle);
 }
 
 FWaveInfo* AWaveGameMode::FetchWaveInfo(int32 wave)
@@ -167,9 +177,25 @@ void AWaveGameMode::EnemyEscaped()
 	{
 		// Game is over
 		UE_LOG(LogTemp, Warning, TEXT("Game Over"));
+		bGameIsOver = true;
 		return;
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("One Esacped"));
+}
+
+void AWaveGameMode::UpdateEnemiesAlive()
+{
+	if (bGameIsOver)
+		return;
+
+	EnemiesLeft--;
+
+	if (EnemiesLeft <= 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("All Enemies are dead - start next wave"));
+		EndWave();
+	}
+
 }
 
