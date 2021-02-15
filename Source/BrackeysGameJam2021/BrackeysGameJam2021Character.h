@@ -31,6 +31,8 @@ public:
 
 protected:
 
+	virtual void Tick(float DeltaSecond) override;
+
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
 
@@ -57,6 +59,14 @@ protected:
 
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
+
+	void StartWavePressed();
+
+	void StartWaveReleased();
+private:
+	float HoldTime = 0;
+
+	bool bIsHoldingDownStartWaveAction = false;
 
 protected:
 	// APawn interface
