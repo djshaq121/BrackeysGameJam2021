@@ -3,6 +3,8 @@
 
 #include "PawnBase.h"
 #include "Components/CapsuleComponent.h"
+#include "BrackeysGameJam2021/Actors/ProjectileBase.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APawnBase::APawnBase()
@@ -23,6 +25,7 @@ APawnBase::APawnBase()
 	ProjectileSpawnLocation->SetupAttachment(TurretMesh);
 }
 
+
 void APawnBase::RotateTurret(FVector LookAtTarget)
 {
 	FVector LookAtTargetClean = FVector(LookAtTarget.X, LookAtTarget.Y, TurretMesh->GetComponentLocation().Z);
@@ -35,6 +38,13 @@ void APawnBase::RotateTurret(FVector LookAtTarget)
 void APawnBase::Fire()
 {
 	//Get ProjectileSpawnPoint Location && Rotation -> Spawn Projectile class at location firing towards Rotation
+	if (ProjectileClass) {
+		FVector SpawnLocation = ProjectileSpawnLocation->GetComponentLocation();
+		FRotator SpawnRotation = ProjectileSpawnLocation->GetComponentRotation();
+
+		AProjectileBase* TempProjectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, SpawnLocation, SpawnRotation);
+		TempProjectile->SetOwner(this);
+	}
 }
 
 void APawnBase::HandleDestruction()

@@ -43,3 +43,9 @@ float APawnTurret::ReturnDistanceToPlayer()
 
 	return FVector::Dist(PlayerCharacter->GetActorLocation(), GetActorLocation());
 }
+
+void APawnTurret::HandleDestruction()
+{
+	Super::HandleDestruction();
+	Destroy();
+}
