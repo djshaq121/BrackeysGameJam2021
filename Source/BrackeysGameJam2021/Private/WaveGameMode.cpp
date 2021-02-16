@@ -13,20 +13,19 @@ AWaveGameMode::AWaveGameMode()
 	PrimaryActorTick.TickInterval = 1.0f;
 }
 
-void AWaveGameMode::BeginPlay()
+void AWaveGameMode::StartGame(FName levelName)
 {
-	Super::BeginPlay();
-
+	ResetGameMode();
 	if (!WaveDataTable)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Wave Data table not found!"));
 		return;
 	}
 
-	CurrentLevelInfo = FetchLevelInfo(CurrentLevelName);
+	CurrentLevelInfo = FetchLevelInfo(levelName);
 	if (!CurrentLevelInfo)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Level Info Not found!"));
+		UE_LOG(LogTemp, Error, TEXT("Level Info Not found! - Please check data table"));
 		return;
 	}
 
@@ -41,6 +40,7 @@ void AWaveGameMode::BeginPlay()
 	}
 
 	WaveStatus = EWaveStatus::HasNotStarted;
+	CurrentCurrency = CurrentLevelInfo->StartingCurrency;
 
 	EnemiesEscaped = 0;
 	PrepareForNextWave();
@@ -57,7 +57,7 @@ void AWaveGameMode::PrepareForNextWave()
 	if (bGameIsOver)
 		return;
 
-	WaveStatus = EWaveStatus::Preparing; 
+	WaveStatus = EWaveStatus::PreparingWave;
 
 	WaveRound++;
 	EnemiesLeft = GetTotalAmountOfEnemies(WaveRound);
@@ -70,13 +70,12 @@ void AWaveGameMode::PrepareForNextWave()
 	UpdateWaveWidget(WaveRound, GetNumberOfWaves());
 	UpdateEnemiesLeftWidget(EnemiesLeft);
 	UpdateChancesLeftWidget(GetTotalChances() - EnemiesEscaped);
-	//UpdateCurrencyWidget
+	UpdateCurrencyWidget(CurrentCurrency);
 
 }
 
 void AWaveGameMode::StartWave()
 {
-	UE_LOG(LogTemp, Error, TEXT("Begin Wave"));
 	if (bGameIsOver)
 		return;
 
@@ -101,6 +100,11 @@ void AWaveGameMode::EndWave()
 	{
 		WaveStatus = EWaveStatus::LevelWon;
 		bGameIsOver = true;
+
+		if (WaveSystemWidget)
+		{
+			WaveSystemWidget->RemoveFromViewport();
+		}
 	}
 
 }
@@ -155,7 +159,7 @@ FLevelInfo* AWaveGameMode::FetchLevelInfo(FName levelName)
 		return nullptr;
 
 	static const FString contextString(TEXT(""));
-	return WaveDataTable->FindRow<FLevelInfo>(CurrentLevelName, contextString, true);
+	return WaveDataTable->FindRow<FLevelInfo>(levelName, contextString, true);
 }
 
 int32 AWaveGameMode::GetNumberOfWaves() const
@@ -197,6 +201,11 @@ int32 AWaveGameMode::GetEnemiesEscaped() const
 	return EnemiesEscaped;
 }
 
+int32 AWaveGameMode::GetCurrency() const
+{
+	return CurrentCurrency;
+}
+
 void AWaveGameMode::EnemyEscaped()
 {
 	EnemiesEscaped++;
@@ -208,10 +217,14 @@ void AWaveGameMode::EnemyEscaped()
 		WaveStatus = EWaveStatus::LevelLost;
 		bGameIsOver = true;
 
+		if (WaveSystemWidget)
+		{
+			WaveSystemWidget->RemoveFromViewport();
+		}
+
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("One Esacped"));
 }
 
 void AWaveGameMode::UpdateEnemiesAlive()
@@ -224,23 +237,33 @@ void AWaveGameMode::UpdateEnemiesAlive()
 	UpdateEnemiesLeftWidget(EnemiesLeft);
 	if (EnemiesLeft <= 0)
 	{
-		UE_LOG(LogTemp, Error, TEXT("All Enemies are dead - End wave"));
+		// End Wave once all enemies are destroyed
 		EndWave();
 	}
 
 }
 
 // Only When in preparing Phase the user can start the wave straight away
-void AWaveGameMode::StartWaveImmediately()
+void AWaveGameMode::SkipPreparationPhase()
 {
 	if (bGameIsOver)
 		return;
 
-	if (WaveStatus == EWaveStatus::Preparing)
+	if (WaveStatus == EWaveStatus::PreparingWave)
 	{
 		// Reset timer as it will start wave again
 		GetWorldTimerManager().ClearTimer(NextWaveTimerHandle);
 		StartWave();
 	}
 
+}
+
+void AWaveGameMode::ResetGameMode()
+{
+	WaveStatus = EWaveStatus::HasNotStarted;
+	CurrentCurrency = 0;
+	EnemiesEscaped = 0;
+	WaveRound = 0;
+	CurrentLevelName = "";
+	bGameIsOver = false;
 }

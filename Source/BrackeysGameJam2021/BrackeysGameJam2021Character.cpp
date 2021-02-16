@@ -93,7 +93,7 @@ void ABrackeysGameJam2021Character::StartWaveReleased()
 	if (HoldTime >= 1.5f)
 	{
 		AWaveGameMode* GameMode = Cast<AWaveGameMode>(GetWorld()->GetAuthGameMode());
-		GameMode->StartWaveImmediately();
+		GameMode->SkipPreparationPhase();
 	}
 }
 

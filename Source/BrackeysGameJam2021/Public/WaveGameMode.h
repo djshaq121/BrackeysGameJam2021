@@ -17,7 +17,7 @@ class UUserWidget;
 UENUM(BlueprintType)
 enum class EWaveStatus : uint8 {
 	HasNotStarted,
-	Preparing,
+	PreparingWave,
 	WaveActive,
 	LevelWon,
 	LevelLost
@@ -58,6 +58,9 @@ struct FLevelInfo : public FTableRowBase
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "1", UIMin = "1"), Category = "Wave")
 	int32 TotalChances;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"), Category = "Wave")
+	int32 StartingCurrency;
 };
 
 UCLASS()
@@ -66,35 +69,38 @@ class BRACKEYSGAMEJAM2021_API AWaveGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
+	void StartGame(FName levelName);
 
-	UFUNCTION(BlueprintCallable, Category = "GameMode")
+	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
 	int32 GetNumberOfWaves() const;
 
-	UFUNCTION(BlueprintCallable, Category = "GameMode")
+	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
 	int32 GetTotalAmountOfEnemies(int32 wave);
 
-	UFUNCTION(BlueprintCallable, Category = "GameMode")
+	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
 	int32 GetTotalChances();
 
-	UFUNCTION(BlueprintCallable, Category = "GameMode")
+	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
 	int32 GetEnemiesEscaped() const;
 
-	UFUNCTION(BlueprintCallable, Category = "GameMode")
+	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
 	void EnemyEscaped();
 
-	UFUNCTION(BlueprintCallable, Category = "GameMode")
+	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
 	void StopSpawningEnemies();
 
-	UFUNCTION(BlueprintCallable, Category = "GameMode")
+	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
 	void UpdateEnemiesAlive();
 
-	void StartWaveImmediately();
+	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
+	int32 GetCurrency() const;
+
+	void SkipPreparationPhase();
 
 protected:
 
 	AWaveGameMode();
-
-	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -104,7 +110,7 @@ protected:
 
 	void PrepareForNextWave();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
+	UFUNCTION(BlueprintImplementableEvent, Category = "WaveGameMode")
 	void SpawnNewEnemy(TSubclassOf<APawn> EnemyToSpawn, int32 RouteForEnemyToFollow);
 
 	void BeginToSpawnEnemy();
@@ -113,23 +119,25 @@ protected:
 
 	FLevelInfo* FetchLevelInfo(FName levelName);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode - HUD")
+	UFUNCTION(BlueprintImplementableEvent, Category = "WaveGameMode - HUD")
 	void UpdateWaveWidget(int32 wave, int32 totalWaves);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode - HUD")
+	UFUNCTION(BlueprintImplementableEvent, Category = "WaveGameMode - HUD")
 	void UpdateCurrencyWidget(int32 currency);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode - HUD")
+	UFUNCTION(BlueprintImplementableEvent, Category = "WaveGameMode - HUD")
 	void UpdateEnemiesLeftWidget(int32 enemiesLeft);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode - HUD")
+	UFUNCTION(BlueprintImplementableEvent, Category = "WaveGameMode - HUD")
 	void UpdateChancesLeftWidget(int32 Lives);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode - HUD")
+	UFUNCTION(BlueprintImplementableEvent, Category = "WaveGameMode - HUD")
 	void UpdateWidgetOnWaveStart();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode - HUD")
+	UFUNCTION(BlueprintImplementableEvent, Category = "WaveGameMode - HUD")
 	void UpdateOnPrepareForWave();
+
+	void ResetGameMode();
 public:
 
 	UPROPERTY(BlueprintReadOnly, Category = Status)
@@ -137,22 +145,31 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category = "GameMode")
+	UPROPERTY(BlueprintReadOnly, Category = "WaveGameMode")
 	int32 WaveRound = 0;
 
-	FTimerHandle EnemySpawnerTimerHandle;
-
-	UPROPERTY(BlueprintReadOnly, Category = "GameMode | Hud")
+	UPROPERTY(BlueprintReadOnly, Category = "WaveGameMode | Hud")
 	FTimerHandle NextWaveTimerHandle;
 
-	UPROPERTY(EditDefaultsOnly, Category = "GameMode")
+	UPROPERTY(EditDefaultsOnly, Category = "WaveGameMode")
 	float TimeForNextWave = 20.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "GameMode")
+	UPROPERTY(EditDefaultsOnly, Category = "WaveGameMode")
 	UDataTable* WaveDataTable;
 
-	UPROPERTY(EditDefaultsOnly, Category = "GameMode")
-	FName CurrentLevelName = "Level1";
+	UPROPERTY(EditDefaultsOnly, Category = "WaveGameMode")
+	FName CurrentLevelName = "";
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WaveGameMode")
+	TSubclassOf<class UUserWidget> HUDWaveSystemClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "WaveGameMode | Hud")
+	class UUserWidget* WaveSystemWidget;
+
+	UPROPERTY(BlueprintReadOnly, Category = "WaveGameMode")
+	int32 CurrentCurrency;
+
+	FTimerHandle EnemySpawnerTimerHandle;
 
 	int32 EnemySectionIndex = 0;
 
@@ -169,9 +186,5 @@ protected:
 
 	bool bGameIsOver = false;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GameMode")
-	TSubclassOf<class UUserWidget> HUDWaveSystemClass;
-
-	UPROPERTY(BlueprintReadOnly, Category = "GameMode | Hud")
-	class UUserWidget* WaveSystemWidget;
+	
 };
