@@ -13,6 +13,8 @@
 
 class UDataTable;
 class UUserWidget;
+class AShop;
+class UTowerData;
 
 UENUM(BlueprintType)
 enum class EWaveStatus : uint8 {
@@ -94,6 +96,9 @@ public:
 	void UpdateEnemiesAlive();
 
 	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
+	void UpdatePlayerCurrencyFromShop(int32 itemPrice);
+
+	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
 	int32 GetCurrency() const;
 
 	void SkipPreparationPhase();
@@ -138,12 +143,22 @@ protected:
 	void UpdateOnPrepareForWave();
 
 	void ResetGameMode();
+
+	bool SpawnShop();
 public:
 
-	UPROPERTY(BlueprintReadOnly, Category = Status)
+	UPROPERTY(BlueprintReadOnly, Category = "Status")
 	EWaveStatus WaveStatus;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Shop")
+	AShop* Shop;
+
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Shop")
+	TSubclassOf<AShop> ShopClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shop")
+	TArray<UTowerData*> TowersData;
 
 	UPROPERTY(BlueprintReadOnly, Category = "WaveGameMode")
 	int32 WaveRound = 0;
