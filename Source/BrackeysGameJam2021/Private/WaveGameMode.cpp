@@ -4,6 +4,8 @@
 #include "WaveGameMode.h"
 #include "TimerManager.h"
 #include "Blueprint/UserWidget.h"
+#include "../Actors/Shop.h"
+#include "../Assets/TowerData.h"
 #include "Engine/DataTable.h"
 
 
@@ -29,11 +31,14 @@ void AWaveGameMode::StartGame(FName levelName)
 		return;
 	}
 
+	if (!SpawnShop())
+		return;
+	
 	// Create the widget
 	if (HUDWaveSystemClass)
 	{
 		WaveSystemWidget = CreateWidget<UUserWidget>(GetWorld(), HUDWaveSystemClass);
-		if (WaveSystemWidget)
+		if (WaveSystemWidget && !WaveSystemWidget->IsVisible())
 		{
 			WaveSystemWidget->AddToViewport();
 		}
@@ -243,6 +248,12 @@ void AWaveGameMode::UpdateEnemiesAlive()
 
 }
 
+void AWaveGameMode::UpdatePlayerCurrencyFromShop(int32 shopPrice)
+{
+	CurrentCurrency -= shopPrice;
+	UpdateCurrencyWidget(CurrentCurrency);
+}
+
 // Only When in preparing Phase the user can start the wave straight away
 void AWaveGameMode::SkipPreparationPhase()
 {
@@ -266,4 +277,28 @@ void AWaveGameMode::ResetGameMode()
 	WaveRound = 0;
 	CurrentLevelName = "";
 	bGameIsOver = false;
+}
+
+bool AWaveGameMode::SpawnShop()
+{
+	if (!ShopClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Shop Class"));
+		return false;
+	}
+
+	if (Shop)
+	   Shop->Destroy();
+	
+	//SpawnShop
+	Shop = GetWorld()->SpawnActor<AShop>(ShopClass, FVector(0, 0, 0), FRotator(0, 0, 0));
+	if (!Shop)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Shop Spawned"));
+		return false;
+	}
+
+	Shop->InitShop(this, TowersData);
+
+	return true;
 }
