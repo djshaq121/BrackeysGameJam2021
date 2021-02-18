@@ -12,7 +12,6 @@
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
 
-
 // Sets default values
 AWavePlayer::AWavePlayer()
 {

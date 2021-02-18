@@ -5,8 +5,11 @@
 #include "GameFramework/Pawn.h"
 #include "PawnBase.generated.h"
 
+
 class UCapsuleComponent;
 class AProjectileBase;
+class AEnemy;
+class USphereComponent;
 
 UCLASS()
 class BRACKEYSGAMEJAM2021_API APawnBase : public APawn
@@ -17,7 +20,7 @@ public:
 	// Sets default values for this pawn's properties
 	APawnBase();
 
-private:
+protected:
 	//Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCapsuleComponent* CapsuleComponent;
@@ -27,10 +30,17 @@ private:
 	UStaticMeshComponent* TurretMesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USceneComponent* ProjectileSpawnLocation;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USphereComponent* SphereComponent;
 	
 	//Variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AProjectileBase> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Turret Range", meta = (AllowPrivateAccess = "true"))
+	float TurretRange = 500.0f;
+
+	TArray<AEnemy*> EnemyTargets;
 
 
 protected:
@@ -40,4 +50,10 @@ protected:
 	void Fire();
 
 	virtual void HandleDestruction();
+
+	UFUNCTION()
+	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };

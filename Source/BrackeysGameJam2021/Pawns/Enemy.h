@@ -50,7 +50,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Montage")
 	UAnimMontage* AnimMontage;
 
-	UHealthComponent* HealthComp;
+	UHealthComponent* HealthComponent;
 
 	bool bIsdead;
 
