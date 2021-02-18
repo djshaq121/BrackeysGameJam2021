@@ -4,13 +4,14 @@
 #include "PawnTurret.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "Enemy.h"
 
 // Called when the game starts or when spawned
 void APawnTurret::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &APawnTurret::CheckFireCondition, FireRate, true);
-	PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
+	//EnemyCharacter = 
 }
 
 // Called every frame
@@ -18,16 +19,16 @@ void APawnTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!PlayerCharacter || ReturnDistanceToPlayer() > FireRange) {
+	if (!EnemyCharacter || ReturnDistanceToPlayer() > FireRange) {
 		return;
 	}
 
-	RotateTurret(PlayerCharacter->GetActorLocation());
+	RotateTurret(EnemyCharacter->GetActorLocation());
 }
 
 void APawnTurret::CheckFireCondition()
 {
-	if (!PlayerCharacter)
+	if (!EnemyCharacter)
 		return;
 
 	if (ReturnDistanceToPlayer() <= FireRange) {
@@ -36,13 +37,15 @@ void APawnTurret::CheckFireCondition()
 	}
 }
 
+/*
 float APawnTurret::ReturnDistanceToPlayer()
 {
-	if (!PlayerCharacter)
+	if (!EnemyCharacter)
 		return 0.0f;
 
-	return FVector::Dist(PlayerCharacter->GetActorLocation(), GetActorLocation());
+	return FVector::Dist(EnemyCharacter->GetActorLocation(), GetActorLocation());
 }
+*/
 
 void APawnTurret::HandleDestruction()
 {

@@ -7,7 +7,7 @@
 #include "PawnTurret.generated.h"
 
 //Declare the enemy class. 
-class ACharacter;
+class AEnemy;
 UCLASS()
 class BRACKEYSGAMEJAM2021_API APawnTurret : public APawnBase
 {
@@ -24,7 +24,7 @@ private:
 	float FireRange = 500.0f;
 	
 	FTimerHandle FireRateTimerHandle;
-	ACharacter* PlayerCharacter;
+	AEnemy* EnemyCharacter;
 
 private:
 	void CheckFireCondition();

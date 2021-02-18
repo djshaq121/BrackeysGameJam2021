@@ -8,12 +8,14 @@
 
 class UCapsuleComponent;
 
+/*
 UENUM(BlueprintType)
 enum class EAbility : uint8 {
 	SpeedBoost,
 	HealthBoost,
 	None
 };
+*/
 
 UCLASS()
 class BRACKEYSGAMEJAM2021_API APawnEnemyBase : public APawn
@@ -37,7 +39,7 @@ protected:
 	UCapsuleComponent* CapsuleComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* BaseMesh;
+	USkeletalMeshComponent* BaseMesh;
 	
 	//This is the health we will need to set on the health component. 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
@@ -48,6 +50,6 @@ protected:
 	float Money;
 	
 	//Initially set to none, but special enemies can have their own ability.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = "true"))
-	EAbility ability = EAbility::None;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = "true"))
+	//EAbility ability = EAbility::None;
 };
