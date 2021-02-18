@@ -98,7 +98,6 @@ void AShop::CloseShop()
 
 bool AShop::BuyTower(UTowerData* TowerToBuy)
 {
-	
 	if (!TowerToBuy || !CanAffordTower(TowerToBuy))
 		return false;
 
@@ -114,6 +113,19 @@ bool AShop::BuyTower(UTowerData* TowerToBuy)
 	TowerBaseInstigator->BuildTower(TowerToBuy);
 
 	return true;
+}
+
+bool AShop::SellTower(UTowerData* TowerToSell)
+{
+	if(!TowerToSell || !TowerBaseInstigator)
+		return false;
+
+	int32 sellPrice = TowerToSell->Price * (1.0f-SellPercent);
+	
+	WaveGameMode->UpdatePlayerCurrency(sellPrice);
+	TowerBaseInstigator->SellTower(TowerToSell);
+
+	return false;
 }
 
 bool AShop::CanAffordTower(UTowerData* TowerToBuy)

@@ -132,7 +132,6 @@ void AWaveGameMode::BeginToSpawnEnemy()
 	}
 	else
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Next section"));
 		EnemiesSpawned = 0;
 		EnemySectionIndex++;
 		BeginToSpawnEnemy();
@@ -251,6 +250,12 @@ void AWaveGameMode::UpdateEnemiesAlive()
 void AWaveGameMode::UpdatePlayerCurrencyFromShop(int32 shopPrice)
 {
 	CurrentCurrency -= shopPrice;
+	UpdateCurrencyWidget(CurrentCurrency);
+}
+
+void AWaveGameMode::UpdatePlayerCurrency(int32 itemPrice)
+{
+	CurrentCurrency += itemPrice;
 	UpdateCurrencyWidget(CurrentCurrency);
 }
 

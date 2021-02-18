@@ -58,8 +58,26 @@ void ATowerBase::OnInteract(AActor* initiator)
 }
 void ATowerBase::BuildTower(UTowerData* towerToSpawn)
 {
+	if (!towerToSpawn)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Tower Data"));
+		return;
+	}
+
 	TowerState = ETowerState::Building;
+	CurrentTowerData = towerToSpawn;
 	BeginBuildingTower(towerToSpawn);
+}
+
+void ATowerBase::SellTower(UTowerData* towerToSpawn)
+{
+	TowerState = ETowerState::Available;
+	CurrentTowerData = nullptr;
+	if (CurrentTower)
+	{
+		CurrentTower->Destroy();
+		CurrentTower = nullptr;
+	}
 }
 
 void ATowerBase::BeginBuildingTower(UTowerData* towerToSpawn)
@@ -68,21 +86,26 @@ void ATowerBase::BeginBuildingTower(UTowerData* towerToSpawn)
 	{
 		
 		FTimerDelegate TimerDel;
-		TimerDel.BindUFunction(this, FName(TEXT("SpawnTower")), towerToSpawn->TowerActorClass);
+		TimerDel.BindUFunction(this, FName(TEXT("SpawnTower")), towerToSpawn);
 		GetWorldTimerManager().SetTimer(BuildingTowerHandler, TimerDel, towerToSpawn->BuildingTime, false);
 	}
 }
 
-void ATowerBase::SpawnTower(TSubclassOf<APawnBase> towerToSpawn)
+void ATowerBase::SpawnTower(UTowerData* towerToSpawnData)
 {
 	// If we have tower already destroy it 
 	if (CurrentTower)
+	{
+		CurrentTowerData = nullptr;
 		CurrentTower->Destroy();
+	}
+		
 	
-	if (towerToSpawn)
+	if (towerToSpawnData && towerToSpawnData->TowerActorClass)
 	{
 		StaticMesh->GetSocketLocation(SpawnLocationSocketName);
-		CurrentTower = GetWorld()->SpawnActor<APawnBase>(towerToSpawn, StaticMesh->GetSocketLocation(SpawnLocationSocketName), StaticMesh->GetSocketRotation(SpawnLocationSocketName));
+		//CurrentTowerData = towerToSpawnData;
+		CurrentTower = GetWorld()->SpawnActor<APawnBase>(towerToSpawnData->TowerActorClass, StaticMesh->GetSocketLocation(SpawnLocationSocketName), StaticMesh->GetSocketRotation(SpawnLocationSocketName));
 		EndBuildingTower();
 	}
 }

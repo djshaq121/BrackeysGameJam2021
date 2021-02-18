@@ -36,6 +36,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TowerBase")
 	void BuildTower(UTowerData* towerToSpawn);
 
+	UFUNCTION(BlueprintCallable, Category = "TowerBase")
+	void SellTower(UTowerData* towerToSpawn);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -49,7 +52,7 @@ protected:
 	void BeginBuildingTower(UTowerData* towerToSpawn);
 
 	UFUNCTION()
-	void SpawnTower(TSubclassOf<APawnBase> towerToSpawn);
+	void SpawnTower(UTowerData* towerToSpawnData);
 
 	void EndBuildingTower();
 
@@ -74,7 +77,8 @@ private:
 	FTimerHandle BuildingTowerHandler;
 
 public: 
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UTowerData* CurrentTowerData;
 	// This allows us open and close the shop with the same interact button
 	bool bIsShopOpen = false;
 

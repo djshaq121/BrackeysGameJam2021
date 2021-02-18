@@ -21,6 +21,9 @@ public:
 	// Sets default values for this actor's properties
 	AShop();
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Shop", meta = (AllowPrivateAccess = "true"))
+	float SellPercent = 0.3f;
+
 private:
 	void ShowPlayerCursor(bool bShowCursor);
 
@@ -46,6 +49,9 @@ public:
 	bool BuyTower(UTowerData* TowerToBuy);
 
 	UFUNCTION(BlueprintCallable, Category = "Shop")
+	bool SellTower(UTowerData* TowerToSell);
+
+	UFUNCTION(BlueprintCallable, Category = "Shop")
 	bool CanAffordTower(UTowerData* TowerToBuy);
 
 private:
@@ -57,6 +63,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shop", meta = (AllowPrivateAccess = "true"))
 	AWavePlayer* PlayerInstigator;
 
+	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shop", meta = (AllowPrivateAccess = "true"))
 	ATowerBase* TowerBaseInstigator;

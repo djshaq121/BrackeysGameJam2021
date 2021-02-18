@@ -36,15 +36,19 @@ void AWavePlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(!PlayerUI)
-		UE_LOG(LogTemp, Warning, TEXT("No player UI selected"));
-
+	
 
 	PlayerUI = CreateWidget<UPlayerUI>(GetWorld() ,PlayerUIClass);
 	if (PlayerUI)
 	{
 		PlayerUI->AddToViewport();
 	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No player UI selected"));
+	}
+		
+
 }
 
 // Called every frame
