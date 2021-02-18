@@ -37,7 +37,7 @@ void APawnTurret::CheckFireCondition()
 	}
 }
 
-/*
+
 float APawnTurret::ReturnDistanceToPlayer()
 {
 	if (!EnemyCharacter)
@@ -45,7 +45,7 @@ float APawnTurret::ReturnDistanceToPlayer()
 
 	return FVector::Dist(EnemyCharacter->GetActorLocation(), GetActorLocation());
 }
-*/
+
 
 void APawnTurret::HandleDestruction()
 {

@@ -12,7 +12,7 @@ AEnemy::AEnemy()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 }
 
 // Called when the game starts or when spawned
@@ -20,7 +20,7 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	HealthComp->OnHealthChanged.AddDynamic(this, &AEnemy::OnHealthChanged);
+	HealthComponent->OnHealthChanged.AddDynamic(this, &AEnemy::OnHealthChanged);
 }
 
 void AEnemy::OnHealthChanged(UHealthComponent* HealthComp, float Health, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
