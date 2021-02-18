@@ -32,9 +32,10 @@ void ATowerBase::BeginPlay()
 
 	InteractableComponent->OnInteract.AddDynamic(this, &ATowerBase::OnInteract);
 	TowerState = ETowerState::Available;
+	bIsShopOpen = false;
 }
 
-void ATowerBase::OnInteract()
+void ATowerBase::OnInteract(AActor* initiator)
 {
 	WaveGameMode = Cast<AWaveGameMode>(GetWorld()->GetAuthGameMode());
 	if (!WaveGameMode)
@@ -45,7 +46,14 @@ void ATowerBase::OnInteract()
 
 	if (Shop)
 	{
-		Shop->OpenShop(this);
+		if (!bIsShopOpen)
+		{
+			Shop->OpenShop(this, initiator);
+		}
+		else
+		{
+			Shop->CloseShop();
+		}
 	}
 }
 void ATowerBase::BuildTower(UTowerData* towerToSpawn)

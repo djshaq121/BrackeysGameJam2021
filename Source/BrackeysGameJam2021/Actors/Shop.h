@@ -9,6 +9,8 @@
 class UTowerData;
 class ATowerBase;
 class AWaveGameMode;
+class AWavePlayer;
+class UShopUI;
 
 UCLASS()
 class BRACKEYSGAMEJAM2021_API AShop : public AActor
@@ -19,20 +21,26 @@ public:
 	// Sets default values for this actor's properties
 	AShop();
 
+private:
+	void ShowPlayerCursor(bool bShowCursor);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WaveGameMode")
-	TSubclassOf<class UUserWidget> ShopWidgetClass;
+	TSubclassOf<class UShopUI> ShopWidgetClass;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Shop")
-	class UUserWidget* ShopWidget;
+	class UShopUI* ShopWidget;
 
 public:	
 	void InitShop(AWaveGameMode* gameMode, TArray<UTowerData*> towersData);
 
-	void OpenShop(ATowerBase* instigator);
+	void OpenShop(ATowerBase* towerInstigator, AActor* playerInstigator);
+
+	UFUNCTION(BlueprintCallable, Category = "Shop")
+	void CloseShop();
 
 	UFUNCTION(BlueprintCallable, Category = "Shop")
 	bool BuyTower(UTowerData* TowerToBuy);
@@ -45,6 +53,9 @@ private:
 	TArray<UTowerData*> TowersData;
 
 	AWaveGameMode* WaveGameMode;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shop", meta = (AllowPrivateAccess = "true"))
+	AWavePlayer* PlayerInstigator;
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shop", meta = (AllowPrivateAccess = "true"))
