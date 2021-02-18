@@ -23,7 +23,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FInteractableDelegate OnInteract;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Interactable")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Interactable")
 	FString InteractPromptText = "";
 		
 };
