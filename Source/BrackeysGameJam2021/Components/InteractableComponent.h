@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "InteractableComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInteractableDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractableDelegate, AActor*, initiator);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BRACKEYSGAMEJAM2021_API UInteractableComponent : public UActorComponent
@@ -18,7 +18,7 @@ public:
 	UInteractableComponent();
 
 	UFUNCTION(BlueprintCallable, Category = "Interactable")
-	void Interact();
+	void Interact(AActor* initiator);
 
 	UPROPERTY(BlueprintAssignable)
 	FInteractableDelegate OnInteract;

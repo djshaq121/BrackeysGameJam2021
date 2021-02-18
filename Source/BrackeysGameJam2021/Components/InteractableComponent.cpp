@@ -10,7 +10,7 @@ UInteractableComponent::UInteractableComponent()
 }
 
 
-void UInteractableComponent::Interact()
+void UInteractableComponent::Interact(AActor* instigator)
 {
-	OnInteract.Broadcast();
+	OnInteract.Broadcast(instigator);
 }

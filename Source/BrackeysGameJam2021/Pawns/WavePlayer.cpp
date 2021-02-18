@@ -112,7 +112,7 @@ void AWavePlayer::InteractPressed()
 {
 	if (InteractableCompHit)
 	{
-		InteractableCompHit->Interact();
+		InteractableCompHit->Interact(this);
 	}
 }
 

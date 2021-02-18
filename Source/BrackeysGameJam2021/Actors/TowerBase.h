@@ -41,7 +41,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void OnInteract();
+	void OnInteract(AActor* initiator);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UInteractableComponent* InteractableComponent;
@@ -72,5 +72,10 @@ private:
 	AShop* Shop;
 
 	FTimerHandle BuildingTowerHandler;
+
+public: 
+
+	// This allows us open and close the shop with the same interact button
+	bool bIsShopOpen = false;
 
 };

@@ -18,6 +18,12 @@ public:
 	// Sets default values for this character's properties
 	AWavePlayer();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "PlayerUI")
+	void OnShowOpen();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "PlayerUI")
+	void OnShopClose();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -63,7 +69,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UPlayerUI> PlayerUIClass;
 
+	UPROPERTY(BlueprintReadWrite, Category = "UI")
 	UPlayerUI* PlayerUI;
+
+
 
 public:
 

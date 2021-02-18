@@ -5,6 +5,9 @@
 #include "../Public/WaveGameMode.h"
 #include "Blueprint/UserWidget.h"
 #include "../Actors/TowerBase.h"
+#include "../Widgets/ShopUI.h"
+#include "../Pawns/WavePlayer.h"
+#include "GameFramework/PlayerController.h"
 
 // Sets default values
 AShop::AShop()
@@ -19,7 +22,8 @@ void AShop::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	ShopWidget = CreateWidget<UUserWidget>(GetWorld(), ShopWidgetClass);
+	ShopWidget = CreateWidget<UShopUI>(GetWorld(), ShopWidgetClass);
+	ShopWidget->InitShop(this);
 }
 
 void AShop::InitShop(AWaveGameMode* gameMode, TArray<UTowerData*> towersData)
@@ -28,18 +32,68 @@ void AShop::InitShop(AWaveGameMode* gameMode, TArray<UTowerData*> towersData)
 	TowersData = towersData;
 }
 
-void AShop::OpenShop(ATowerBase* instigator)
+void AShop::OpenShop(ATowerBase* towerInstigator, AActor* playerInstigator)
 {
-	TowerBaseInstigator = instigator;
+	if (!towerInstigator)
+	{
+		// error
+		UE_LOG(LogTemp, Error, TEXT("No Tower Instigator"));
+		return;
+	}
+	
+	PlayerInstigator = Cast<AWavePlayer>(playerInstigator);
+	TowerBaseInstigator = towerInstigator;
 
 	// Create widget and add to view port
 	if (ShopWidget == nullptr)
 	{
-		ShopWidget = CreateWidget<UUserWidget>(GetWorld(), ShopWidgetClass);
+		ShopWidget = CreateWidget<UShopUI>(GetWorld(), ShopWidgetClass);
+		ShopWidget->InitShop(this);
 	}
 
 	if (ShopWidget && !ShopWidget->IsVisible())
+	{
+		ShowPlayerCursor(true);
+		if (PlayerInstigator)
+		{
+			PlayerInstigator->OnShowOpen();
+			ShopWidget->WavePlayer = PlayerInstigator;
+			auto pc = Cast<APlayerController>(PlayerInstigator->GetController());
+			if (pc)
+			{
+				pc->SetInputMode(FInputModeGameAndUI());
+			}
+		}
+
+		ShopWidget->UpdateTowerInstiagator(towerInstigator);
 		ShopWidget->AddToViewport();
+		TowerBaseInstigator->bIsShopOpen = true; 
+	}
+		
+}
+
+void AShop::CloseShop()
+{
+	ShowPlayerCursor(false);
+	if (TowerBaseInstigator)
+		TowerBaseInstigator->bIsShopOpen = false;
+
+	TowerBaseInstigator = nullptr;
+	ShopWidget->WavePlayer = nullptr;
+
+	if (ShopWidget && ShopWidget->IsVisible())
+	{
+		if (PlayerInstigator)
+		{
+			PlayerInstigator->OnShopClose();
+			auto pc = Cast<APlayerController>(PlayerInstigator->GetController());
+			if (pc)
+			{
+				pc->SetInputMode(FInputModeGameOnly());
+			}
+		}
+		ShopWidget->RemoveFromParent();
+	}
 }
 
 bool AShop::BuyTower(UTowerData* TowerToBuy)
@@ -70,3 +124,14 @@ bool AShop::CanAffordTower(UTowerData* TowerToBuy)
 	return WaveGameMode->GetCurrency() >= TowerToBuy->Price;
 }
 
+void AShop::ShowPlayerCursor(bool bShowCursor)
+{
+	if (PlayerInstigator)
+	{
+		auto pc = Cast<APlayerController>(PlayerInstigator->GetController());
+		if (pc)
+		{
+			pc->bShowMouseCursor = bShowCursor;
+		}
+	}
+}
