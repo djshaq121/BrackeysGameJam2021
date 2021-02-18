@@ -9,22 +9,32 @@
 #include "GameFramework/Character.h"
 #include "BrackeysGameJam2021/Components/HealthComponent.h"
 #include "Enemy.h"
+#include "../Assets/TowerData.h"
 
-APawnTurret::APawnTurret() {
+APawnTurret::APawnTurret() 
+{
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Component"));
-	SphereComponent->InitSphereRadius(FireRange);
 	SphereComponent->SetupAttachment(RootComponent);
-
 	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &APawnTurret::OnOverlapBegin);
 	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &APawnTurret::OnOverlapEnd);
+	SphereComponent->SetCollisionProfileName(TEXT("Trigger"));
+
+	SphereComponent->SetSphereRadius(500.0f);
 }
 
 // Called when the game starts or when spawned
 void APawnTurret::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (SphereComponent)
+	{
+		SphereComponent->SetSphereRadius(500.0f);
+	}
+	
 	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &APawnTurret::CheckFireCondition, FireRate, true);
 	CurrentTarget = nullptr; 
+	
 }
 
 // Called every frame
@@ -81,9 +91,11 @@ float APawnTurret::ReturnDistanceToPlayer()
 
 void APawnTurret::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UE_LOG(LogTemp, Warning, TEXT("On range"));
 	if (OtherActor && (OtherActor != this) && OtherComp) {
 		auto enemy = Cast<AEnemy>(OtherActor);
 		if (enemy) {
+			UE_LOG(LogTemp, Warning, TEXT("Turret range"));
 			if (!CurrentTarget) {
 				CurrentTarget = enemy;
 			}
@@ -113,4 +125,5 @@ void APawnTurret::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Othe
 		}
 	}
 }
+
 

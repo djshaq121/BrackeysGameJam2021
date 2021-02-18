@@ -104,9 +104,8 @@ bool AShop::BuyTower(UTowerData* TowerToBuy)
 	if (!TowerBaseInstigator)
 		return false;
 
-	if (!TowerBaseInstigator->IsSpaceAvailable())
-		return false;
-
+	//We should check if they can afford and IsBuilding in UI first 
+	
 	// Update Currency
 	WaveGameMode->UpdatePlayerCurrencyFromShop(TowerToBuy->Price);
 
@@ -128,7 +127,7 @@ bool AShop::SellTower(UTowerData* TowerToSell)
 	return false;
 }
 
-bool AShop::CanAffordTower(UTowerData* TowerToBuy)
+bool AShop::CanAffordTower(UTowerData* TowerToBuy) const
 {
 	if (!WaveGameMode)
 		return false;
