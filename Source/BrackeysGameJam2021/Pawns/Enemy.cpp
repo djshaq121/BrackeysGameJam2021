@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Enemy.h"
 #include "BrackeysGameJam2021/Components/HealthComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -13,6 +12,7 @@ AEnemy::AEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+	
 }
 
 // Called when the game starts or when spawned
@@ -21,6 +21,10 @@ void AEnemy::BeginPlay()
 	Super::BeginPlay();
 	
 	HealthComponent->OnHealthChanged.AddDynamic(this, &AEnemy::OnHealthChanged);
+
+	UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	if(CharacterMovementComponent)
+		CharacterMovementComponent->MaxWalkSpeed = MovementSpeed;
 }
 
 void AEnemy::OnHealthChanged(UHealthComponent* HealthComp, float Health, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)

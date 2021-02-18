@@ -7,13 +7,14 @@
 #include "PawnTurret.generated.h"
 
 //Declare the enemy class. 
-class AEnemy;
+
 UCLASS()
 class BRACKEYSGAMEJAM2021_API APawnTurret : public APawnBase
 {
 	GENERATED_BODY()
 	
 public:
+	APawnTurret();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -22,9 +23,20 @@ private:
 	float FireRate = 2.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"));
 	float FireRange = 500.0f;
+
+	//Variables
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AProjectileBase> ProjectileClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* SphereComponent;
+
+	class UHealthComponent* HealthComponent;
+
+	TArray<AEnemy*> EnemyTargets;
 	
 	FTimerHandle FireRateTimerHandle;
-	AEnemy* EnemyCharacter;
+	class AEnemy* CurrentTarget;
 
 private:
 	void CheckFireCondition();
@@ -34,5 +46,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void HandleDestruction() override;
+	void RotateTurret(FVector LookAtTarget);
+
+	//You can add arguments to change the type of projectile fired and how many at a time. 
+	void Fire();
+
+	UFUNCTION()
+	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };

@@ -6,6 +6,7 @@
 #include "BrackeysGameJam2021/Actors/ProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
+#include "Enemy.h"
 
 // Sets default values
 APawnBase::APawnBase()
@@ -25,49 +26,5 @@ APawnBase::APawnBase()
 	ProjectileSpawnLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Spawn Location"));
 	ProjectileSpawnLocation->SetupAttachment(TurretMesh);
 
-	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Component"));
-	SphereComponent->InitSphereRadius(TurretRange);
-	SphereComponent->SetupAttachment(ProjectileSpawnLocation);
-
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &APawnBase::OnOverlapBegin);
-	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &APawnBase::OnOverlapEnd);
 }
 
-
-void APawnBase::RotateTurret(FVector LookAtTarget)
-{
-	FVector LookAtTargetClean = FVector(LookAtTarget.X, LookAtTarget.Y, TurretMesh->GetComponentLocation().Z);
-	FVector StartLocation = TurretMesh->GetComponentLocation();
-
-	FRotator TurretRotation = FVector(LookAtTargetClean - StartLocation).Rotation();
-	TurretMesh->SetWorldRotation(TurretRotation);
-}
-
-void APawnBase::Fire()
-{
-	//Get ProjectileSpawnPoint Location && Rotation -> Spawn Projectile class at location firing towards Rotation
-	if (ProjectileClass) {
-		FVector SpawnLocation = ProjectileSpawnLocation->GetComponentLocation();
-		FRotator SpawnRotation = ProjectileSpawnLocation->GetComponentRotation();
-
-		AProjectileBase* TempProjectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, SpawnLocation, SpawnRotation);
-		TempProjectile->SetOwner(this);
-	}
-}
-
-void APawnBase::HandleDestruction()
-{
-	// Play Death effects particle, sound and camera shake.
-
-	// Child OVERRIDES
-	// PawnTurret inform gamemode turret died -> then destroy() self
-
-}
-
-void APawnBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-}
-
-void APawnBase::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-}
