@@ -3,15 +3,28 @@
 
 #include "PawnTurret.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
+#include "BrackeysGameJam2021/Actors/ProjectileBase.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
+#include "BrackeysGameJam2021/Components/HealthComponent.h"
 #include "Enemy.h"
+
+APawnTurret::APawnTurret() {
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Component"));
+	SphereComponent->InitSphereRadius(FireRange);
+	SphereComponent->SetupAttachment(RootComponent);
+
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &APawnTurret::OnOverlapBegin);
+	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &APawnTurret::OnOverlapEnd);
+}
 
 // Called when the game starts or when spawned
 void APawnTurret::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &APawnTurret::CheckFireCondition, FireRate, true);
-	//EnemyCharacter = 
+	CurrentTarget = nullptr; 
 }
 
 // Called every frame
@@ -19,16 +32,16 @@ void APawnTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!EnemyCharacter || ReturnDistanceToPlayer() > FireRange) {
+	if (!CurrentTarget || ReturnDistanceToPlayer() > FireRange) {
 		return;
 	}
 
-	RotateTurret(EnemyCharacter->GetActorLocation());
+	RotateTurret(CurrentTarget->GetActorLocation());
 }
 
 void APawnTurret::CheckFireCondition()
 {
-	if (!EnemyCharacter)
+	if (!CurrentTarget)
 		return;
 
 	if (ReturnDistanceToPlayer() <= FireRange) {
@@ -37,18 +50,67 @@ void APawnTurret::CheckFireCondition()
 	}
 }
 
+void APawnTurret::RotateTurret(FVector LookAtTarget)
+{
+	FVector LookAtTargetClean = FVector(LookAtTarget.X, LookAtTarget.Y, TurretMesh->GetComponentLocation().Z);
+	FVector StartLocation = TurretMesh->GetComponentLocation();
+
+	FRotator TurretRotation = FVector(LookAtTargetClean - StartLocation).Rotation();
+	TurretMesh->SetWorldRotation(TurretRotation);
+}
+
+void APawnTurret::Fire()
+{
+	//Get ProjectileSpawnPoint Location && Rotation -> Spawn Projectile class at location firing towards Rotation
+	if (ProjectileClass) {
+		FVector SpawnLocation = ProjectileSpawnLocation->GetComponentLocation();
+		FRotator SpawnRotation = ProjectileSpawnLocation->GetComponentRotation();
+
+		AProjectileBase* TempProjectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, SpawnLocation, SpawnRotation);
+		TempProjectile->SetOwner(this);
+	}
+}
 
 float APawnTurret::ReturnDistanceToPlayer()
 {
-	if (!EnemyCharacter)
+	if (!CurrentTarget)
 		return 0.0f;
 
-	return FVector::Dist(EnemyCharacter->GetActorLocation(), GetActorLocation());
+	return FVector::Dist(CurrentTarget->GetActorLocation(), GetActorLocation());
 }
 
-
-void APawnTurret::HandleDestruction()
+void APawnTurret::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::HandleDestruction();
-	Destroy();
+	if (OtherActor && (OtherActor != this) && OtherComp) {
+		auto enemy = Cast<AEnemy>(OtherActor);
+		if (enemy) {
+			if (!CurrentTarget) {
+				CurrentTarget = enemy;
+			}
+			UE_LOG(LogTemp, Warning, TEXT("Added Character to TArray List"));
+			EnemyTargets.Add(enemy);
+		}
+	}
 }
+
+void APawnTurret::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor && (OtherActor != this) && OtherComp) {
+		auto enemy = Cast<AEnemy>(OtherActor);
+		if (enemy) {
+			if (enemy == CurrentTarget) { //Check to see if the enemy leaving the circle is the one we were targeting.
+				EnemyTargets.RemoveSingle(enemy);
+				if (EnemyTargets.Num() > 0) { //If we have anymore enemies in our list we can assign another one as the current target
+					CurrentTarget = *(EnemyTargets.GetData()); 
+				}
+				else { //otherwise there are no enemies to be aimed at
+					CurrentTarget = nullptr;
+				}
+			}
+			else {
+				EnemyTargets.RemoveSingle(enemy);
+			}
+		}
+	}
+}
+

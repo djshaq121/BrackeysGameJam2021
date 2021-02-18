@@ -43,6 +43,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Money", meta = (AllowPrivateAccess = "true"))
 	float Money;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement Speed", meta = (AllowPrivateAccess = "true"))
+	float MovementSpeed;
+
 	//Initially set to none, but special enemies can have their own ability.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = "true"))
 	EAbility ability = EAbility::None;
@@ -50,6 +53,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Montage")
 	UAnimMontage* AnimMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* HealthComponent;
 
 	bool bIsdead;
