@@ -13,6 +13,7 @@ class APawnBase;
 class AWaveGameMode;
 class AShop;
 class UTowerData;
+class UTowerBaseBuildingUI;
 
 UENUM(BlueprintType)
 enum class ETowerState : uint8 {
@@ -39,9 +40,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TowerBase")
 	void SellTower(UTowerData* towerToSpawn);
 
+	UFUNCTION(BlueprintCallable, Category = "Shop")
+	bool IsBuilding() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "TowerBaseUI")
+	TSubclassOf<class UTowerBaseBuildingUI> TowerBaseWidgetClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "TowerBaseUI")
+	UTowerBaseBuildingUI* TowerBaseWidget;
 
 	UFUNCTION()
 	void OnInteract(AActor* initiator);
@@ -60,6 +70,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Static Mesh")
 	UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Comp")
+	class UWidgetComponent* WidgetComp;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Static Mesh")
 	FName SpawnLocationSocketName = "Base";
