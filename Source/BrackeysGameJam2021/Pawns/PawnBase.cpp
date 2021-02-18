@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 #include "Enemy.h"
+#include "../Assets/TowerData.h"
 
 // Sets default values
 APawnBase::APawnBase()
@@ -28,3 +29,22 @@ APawnBase::APawnBase()
 
 }
 
+void APawnBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+}
+
+void APawnBase::InitTowerData()
+{
+	if (TowerData)
+	{
+		FireRange = TowerData->Range;
+		FireRate = TowerData->FiringRate;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Tower Data set"));
+	}
+
+}

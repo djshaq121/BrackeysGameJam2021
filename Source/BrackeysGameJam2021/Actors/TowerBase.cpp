@@ -132,7 +132,16 @@ void ATowerBase::SpawnTower(UTowerData* towerToSpawnData)
 	{
 		StaticMesh->GetSocketLocation(SpawnLocationSocketName);
 		//CurrentTowerData = towerToSpawnData;
-		CurrentTower = GetWorld()->SpawnActor<APawnBase>(towerToSpawnData->TowerActorClass, StaticMesh->GetSocketLocation(SpawnLocationSocketName), StaticMesh->GetSocketRotation(SpawnLocationSocketName));
+		//StaticMesh->GetSocketLocation(SpawnLocationSocketName), StaticMesh->GetSocketRotation(SpawnLocationSocketName)
+		/*GetWorld()->SpawnActor<APawnBase>(
+			towerToSpawnData->TowerActorClass,
+			GetActorLocation() + FVector(0, 0, 150),
+			GetActorRotation());*/
+		CurrentTower = GetWorld()->SpawnActor<APawnBase>(
+			towerToSpawnData->TowerActorClass, 
+			StaticMesh->GetSocketLocation(SpawnLocationSocketName),
+			StaticMesh->GetSocketRotation(SpawnLocationSocketName));
+
 		EndBuildingTower();
 	}
 }
