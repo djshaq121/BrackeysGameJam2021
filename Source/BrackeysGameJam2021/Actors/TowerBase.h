@@ -4,16 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "../Pawns/PawnBase.h"
 #include "TowerBase.generated.h"
 
 class UInteractableComponent;
 class UStaticMeshComponent;
-class APawnBase;
 class AWaveGameMode;
 class AShop;
 class UTowerData;
 class UTowerBaseBuildingUI;
+
 
 UENUM(BlueprintType)
 enum class ETowerState : uint8 {
@@ -81,7 +80,7 @@ protected:
 	ETowerState TowerState;
 
 private:
-	APawnBase* CurrentTower;
+	class ATower* CurrentTower;
 
 	AWaveGameMode* WaveGameMode;
 

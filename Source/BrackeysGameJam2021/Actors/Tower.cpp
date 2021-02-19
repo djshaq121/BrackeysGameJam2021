@@ -50,6 +50,7 @@ void ATower::InitTowerData()
 	{
 		TowerRange = TowerData->Range;
 		FireRate = TowerData->FiringRate;
+		TowerDamge = TowerData->Damage;
 	}
 	else
 	{

@@ -21,6 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	void SetDamage(float damage) { Damage = damage; };
 	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -32,7 +33,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Move", meta = (AllowPrivateAccess = "true"))
 	float ProjectileSpeed = 1300;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage", meta = (AllowPrivateAccess = "true"))
+
 	float Damage = 50;
 
 private:
