@@ -7,7 +7,8 @@
 #include "../Actors/TowerBase.h"
 #include "../Widgets/ShopUI.h"
 #include "../Pawns/WavePlayer.h"
-#include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AShop::AShop()
@@ -106,6 +107,9 @@ bool AShop::BuyTower(UTowerData* TowerToBuy)
 
 	//We should check if they can afford and IsBuilding in UI first 
 	
+	// Play Sound at location
+	UGameplayStatics::PlaySound2D(GetWorld(), BuyingTowerSound);
+
 	// Update Currency
 	WaveGameMode->UpdatePlayerCurrencyFromShop(TowerToBuy->Price);
 
@@ -123,6 +127,9 @@ bool AShop::SellTower(UTowerData* TowerToSell)
 	
 	WaveGameMode->UpdatePlayerCurrency(sellPrice);
 	TowerBaseInstigator->SellTower(TowerToSell);
+
+	UGameplayStatics::PlaySound2D(GetWorld(), SellingTowerSound);
+	//UGameplayStatics::PlaySoundAtLocation(GetWorld(), SellingTowerSound, TowerBaseInstigator->GetActorLocation());
 
 	return false;
 }
