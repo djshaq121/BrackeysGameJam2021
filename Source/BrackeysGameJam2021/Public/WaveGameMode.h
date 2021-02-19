@@ -99,7 +99,7 @@ public:
 	void UpdatePlayerCurrencyFromShop(int32 itemPrice);
 
 	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
-	void UpdatePlayerCurrency(int32 itemPrice);
+	void UpdatePlayerCurrency(int32 value);
 
 	UFUNCTION(BlueprintCallable, Category = "WaveGameMode")
 	int32 GetCurrency() const;

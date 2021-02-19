@@ -23,12 +23,16 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Event")
 	FOnHealthChangedSignature OnHealthChanged;
 
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	float GetMaxHealth() const { return DefaultHealth; }
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere)
 	float DefaultHealth = 100.0f;
+
 	float Health = 0.0f;
 
 	UFUNCTION()

@@ -38,10 +38,15 @@ protected:
 	UFUNCTION()
 	void OnHealthChanged(UHealthComponent* HealthComp, float Health, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
 
+	void ResetHealthBarVisbible();
 protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	float ProgressBarHideTime = 10.f;
+
 	//This is the money the player will drop
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Money", meta = (AllowPrivateAccess = "true"))
-	float Money;
+	float Money = 20.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement Speed", meta = (AllowPrivateAccess = "true"))
 	float MovementSpeed;
@@ -56,6 +61,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* HealthComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Comp")
+	class UWidgetComponent* WidgetComp;
+
+	UPROPERTY(BlueprintReadOnly, Category = "TowerBaseUI")
+	class UEnemyUI* EnemyWidget;
+
 	bool bIsdead;
 
+	FTimerHandle LastTimeDamagerTimer;
 };

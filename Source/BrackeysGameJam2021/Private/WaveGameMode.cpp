@@ -253,9 +253,9 @@ void AWaveGameMode::UpdatePlayerCurrencyFromShop(int32 shopPrice)
 	UpdateCurrencyWidget(CurrentCurrency);
 }
 
-void AWaveGameMode::UpdatePlayerCurrency(int32 itemPrice)
+void AWaveGameMode::UpdatePlayerCurrency(int32 value)
 {
-	CurrentCurrency += itemPrice;
+	CurrentCurrency += value;
 	UpdateCurrencyWidget(CurrentCurrency);
 }
 
