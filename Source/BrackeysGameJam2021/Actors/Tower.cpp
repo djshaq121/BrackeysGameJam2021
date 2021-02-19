@@ -33,6 +33,7 @@ ATower::ATower()
 void ATower::BeginPlay()
 {
 	Super::BeginPlay();
+	InitTowerData();
 	TowerComponent = FindComponentByClass<UTowerComponent>();
 }
 

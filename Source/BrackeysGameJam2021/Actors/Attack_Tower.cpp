@@ -14,14 +14,14 @@
 void AAttack_Tower::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	SphereComponent = FindComponentByClass<USphereComponent>();
 
 	if (SphereComponent)
 	{
 		SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AAttack_Tower::OnOverlapBegin);
 		SphereComponent->OnComponentEndOverlap.AddDynamic(this, &AAttack_Tower::OnOverlapEnd);
-		SphereComponent->SetSphereRadius(500.0f);
+		SphereComponent->SetSphereRadius(TowerRange);
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &AAttack_Tower::CheckFireCondition, FireRate, true);
