@@ -31,10 +31,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WaveGameMode")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ShopUI")
 	TSubclassOf<class UShopUI> ShopWidgetClass;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Shop")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WaveGameMode")
+	class USoundCue* BuyingTowerSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WaveGameMode")
+	class USoundCue* SellingTowerSound;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ShopUI")
 	class UShopUI* ShopWidget;
 
 public:	
