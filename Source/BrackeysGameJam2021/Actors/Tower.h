@@ -37,7 +37,7 @@ protected:
 	float FireRate = 2.0f;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"));
-	float TowerRange = 500.0f;
+	float TowerRange = 1000.0f;
 
 	//Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
