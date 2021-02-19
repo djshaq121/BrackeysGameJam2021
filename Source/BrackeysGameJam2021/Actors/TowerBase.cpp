@@ -7,6 +7,8 @@
 #include "../Public/WaveGameMode.h"
 #include "../Actors/Shop.h"
 #include "../Assets/TowerData.h"
+#include "../Widgets/TowerBaseBuildingUI.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 ATowerBase::ATowerBase()
@@ -16,6 +18,9 @@ ATowerBase::ATowerBase()
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
 	RootComponent = StaticMesh;
+
+	WidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget Comp"));
+	WidgetComp->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -33,6 +38,18 @@ void ATowerBase::BeginPlay()
 	InteractableComponent->OnInteract.AddDynamic(this, &ATowerBase::OnInteract);
 	TowerState = ETowerState::Available;
 	bIsShopOpen = false;
+
+	if (WidgetComp)
+	{
+		TowerBaseWidget = Cast<UTowerBaseBuildingUI>(WidgetComp->GetUserWidgetObject());
+		//TowerBaseWidget = CreateWidget<UTowerBaseBuildingUI>(GetWorld(), TowerBaseWidgetClass);
+		if (TowerBaseWidget)
+		{
+			//WidgetComp->SetWidgetClass(TowerBaseWidgetClass);
+			TowerBaseWidget->InitTowerBaseUI(this);
+			TowerBaseWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
 }
 
 void ATowerBase::OnInteract(AActor* initiator)
@@ -71,8 +88,12 @@ void ATowerBase::BuildTower(UTowerData* towerToSpawn)
 
 void ATowerBase::SellTower(UTowerData* towerToSpawn)
 {
+	// If we are building the tower we need to stop building
+	GetWorldTimerManager().ClearTimer(BuildingTowerHandler);
+
 	TowerState = ETowerState::Available;
 	CurrentTowerData = nullptr;
+
 	if (CurrentTower)
 	{
 		CurrentTower->Destroy();
@@ -84,10 +105,16 @@ void ATowerBase::BeginBuildingTower(UTowerData* towerToSpawn)
 {
 	if (towerToSpawn && towerToSpawn->TowerActorClass)
 	{
-		
 		FTimerDelegate TimerDel;
 		TimerDel.BindUFunction(this, FName(TEXT("SpawnTower")), towerToSpawn);
 		GetWorldTimerManager().SetTimer(BuildingTowerHandler, TimerDel, towerToSpawn->BuildingTime, false);
+		if (TowerBaseWidget)
+		{
+			TowerBaseWidget->SetBuildTime((towerToSpawn->BuildingTime > 0) ? towerToSpawn->BuildingTime : 1);
+			TowerBaseWidget->SetTimerHandlerBuilding(BuildingTowerHandler);
+			TowerBaseWidget->SetVisibility(ESlateVisibility::Visible);
+
+		}
 	}
 }
 
@@ -105,7 +132,16 @@ void ATowerBase::SpawnTower(UTowerData* towerToSpawnData)
 	{
 		StaticMesh->GetSocketLocation(SpawnLocationSocketName);
 		//CurrentTowerData = towerToSpawnData;
-		CurrentTower = GetWorld()->SpawnActor<APawnBase>(towerToSpawnData->TowerActorClass, StaticMesh->GetSocketLocation(SpawnLocationSocketName), StaticMesh->GetSocketRotation(SpawnLocationSocketName));
+		//StaticMesh->GetSocketLocation(SpawnLocationSocketName), StaticMesh->GetSocketRotation(SpawnLocationSocketName)
+		/*GetWorld()->SpawnActor<APawnBase>(
+			towerToSpawnData->TowerActorClass,
+			GetActorLocation() + FVector(0, 0, 150),
+			GetActorRotation());*/
+		CurrentTower = GetWorld()->SpawnActor<APawnBase>(
+			towerToSpawnData->TowerActorClass, 
+			StaticMesh->GetSocketLocation(SpawnLocationSocketName),
+			StaticMesh->GetSocketRotation(SpawnLocationSocketName));
+
 		EndBuildingTower();
 	}
 }
@@ -119,6 +155,14 @@ void ATowerBase::EndBuildingTower()
 {
 	TowerState = ETowerState::Occupied;
 	GetWorldTimerManager().ClearTimer(BuildingTowerHandler);
+	if (TowerBaseWidget)
+		TowerBaseWidget->SetVisibility(ESlateVisibility::Hidden);
+	
+}
+
+bool ATowerBase::IsBuilding() const
+{
+	return TowerState == ETowerState::Building;
 }
 
 

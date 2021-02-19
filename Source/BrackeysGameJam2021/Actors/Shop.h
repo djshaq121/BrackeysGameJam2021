@@ -52,7 +52,7 @@ public:
 	bool SellTower(UTowerData* TowerToSell);
 
 	UFUNCTION(BlueprintCallable, Category = "Shop")
-	bool CanAffordTower(UTowerData* TowerToBuy);
+	bool CanAffordTower(UTowerData* TowerToBuy) const;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shop", meta = (AllowPrivateAccess = "true"))
