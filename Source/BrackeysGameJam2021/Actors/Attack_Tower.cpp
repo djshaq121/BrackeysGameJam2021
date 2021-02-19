@@ -70,6 +70,7 @@ void AAttack_Tower::Fire()
 
 		AProjectileBase* TempProjectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, SpawnLocation, SpawnRotation);
 		TempProjectile->SetOwner(this);
+		TempProjectile->SetDamage(TowerDamge);
 	}
 }
 

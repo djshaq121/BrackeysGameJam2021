@@ -21,6 +21,14 @@ AProjectileBase::AProjectileBase()
 	InitialLifeSpan = 3.0f;
 }
 
+// Called when the game starts or when spawned
+void AProjectileBase::BeginPlay()
+{
+	Super::BeginPlay();
+	ProjectileMesh->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
+}
+
+
 void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	AActor* MyOwner = GetOwner();
@@ -34,10 +42,4 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	Destroy();
 }
 
-// Called when the game starts or when spawned
-void AProjectileBase::BeginPlay()
-{
-	Super::BeginPlay();
-	ProjectileMesh->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
-}
 

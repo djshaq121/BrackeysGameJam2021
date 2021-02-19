@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "../Pawns/PawnBase.h"
+#include "../Actors/Tower.h"
 #include "TowerData.generated.h"
 
 /**
@@ -18,7 +18,7 @@ class BRACKEYSGAMEJAM2021_API UTowerData : public UDataAsset
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<APawnBase> TowerActorClass;
+	TSubclassOf<ATower> TowerActorClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString Name;
