@@ -1,18 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PawnBase.h"
+#include "Tower.h"
 #include "Components/CapsuleComponent.h"
-#include "BrackeysGameJam2021/Actors/ProjectileBase.h"
-#include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
-#include "Enemy.h"
+#include "BrackeysGameJam2021/Components/TowerComponent.h"
 #include "../Assets/TowerData.h"
 
 // Sets default values
-APawnBase::APawnBase()
+ATower::ATower()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Collider"));
@@ -24,26 +22,37 @@ APawnBase::APawnBase()
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret Mesh"));
 	TurretMesh->SetupAttachment(BaseMesh);
 
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Component"));
+	SphereComponent->SetupAttachment(RootComponent);
+
 	ProjectileSpawnLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Spawn Location"));
 	ProjectileSpawnLocation->SetupAttachment(TurretMesh);
-
 }
 
-void APawnBase::BeginPlay()
+// Called when the game starts or when spawned
+void ATower::BeginPlay()
 {
 	Super::BeginPlay();
+	TowerComponent = FindComponentByClass<UTowerComponent>();
+}
+
+// Called every frame
+void ATower::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 
 }
 
-void APawnBase::InitTowerData()
+void ATower::InitTowerData()
 {
 	if (TowerData)
 	{
-		FireRange = TowerData->Range;
+		TowerRange = TowerData->Range;
 		FireRate = TowerData->FiringRate;
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("No Tower Data set"));
 	}
+
 }
