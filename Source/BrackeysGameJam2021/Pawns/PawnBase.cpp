@@ -46,5 +46,4 @@ void APawnBase::InitTowerData()
 	{
 		UE_LOG(LogTemp, Error, TEXT("No Tower Data set"));
 	}
-
 }
