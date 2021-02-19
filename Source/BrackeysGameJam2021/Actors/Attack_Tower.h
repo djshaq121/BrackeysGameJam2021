@@ -39,6 +39,10 @@ protected:
 
 	void RotateTurret(FVector LookAtTarget);
 
+	void StartFire();
+
+	void EndFire();
+
 	//You can add arguments to change the type of projectile fired and how many at a time. 
 	void Fire();
 
@@ -47,4 +51,8 @@ protected:
 
 	UFUNCTION()
 	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+private:
+
+	float LastFireTime;
 };

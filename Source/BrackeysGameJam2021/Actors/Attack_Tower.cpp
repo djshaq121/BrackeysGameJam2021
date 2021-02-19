@@ -24,7 +24,7 @@ void AAttack_Tower::BeginPlay()
 		SphereComponent->SetSphereRadius(TowerRange);
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &AAttack_Tower::CheckFireCondition, FireRate, true);
+	//GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &AAttack_Tower::CheckFireCondition, FireRate, true);
 	CurrentTarget = nullptr;
 
 }
@@ -43,13 +43,17 @@ void AAttack_Tower::Tick(float DeltaTime)
 
 void AAttack_Tower::CheckFireCondition()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Can Fire"));
 	if (!CurrentTarget)
 		return;
 
-	if (ReturnDistanceToPlayer() <= TowerRange) {
+	
+	//if (ReturnDistanceToPlayer() <= TowerRange) {
+		//UE_LOG(LogTemp, Warning, TEXT("Fire"));
 		//Fire
+	//If we have a currentTarget we know its in range
 		Fire();
-	}
+	//}
 }
 
 void AAttack_Tower::RotateTurret(FVector LookAtTarget)
@@ -59,6 +63,20 @@ void AAttack_Tower::RotateTurret(FVector LookAtTarget)
 
 	FRotator TurretRotation = FVector(LookAtTargetClean - StartLocation).Rotation();
 	TurretMesh->SetWorldRotation(TurretRotation);
+}
+
+void AAttack_Tower::StartFire()
+{
+	float FirstDelay = FMath::Max(LastFireTime + FireRate - GetWorld()->TimeSeconds, 0.0f);
+	RotateTurret(CurrentTarget->GetActorLocation());
+
+	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &AAttack_Tower::CheckFireCondition, FireRate, true, FirstDelay);
+}
+
+void AAttack_Tower::EndFire()
+{
+	UE_LOG(LogTemp, Warning, TEXT("EndFire"));
+	GetWorldTimerManager().ClearTimer(FireRateTimerHandle);
 }
 
 void AAttack_Tower::Fire()
@@ -71,6 +89,7 @@ void AAttack_Tower::Fire()
 		AProjectileBase* TempProjectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, SpawnLocation, SpawnRotation);
 		TempProjectile->SetOwner(this);
 		TempProjectile->SetDamage(TowerDamge);
+		LastFireTime = GetWorld()->TimeSeconds;
 	}
 }
 
@@ -84,13 +103,13 @@ float AAttack_Tower::ReturnDistanceToPlayer()
 
 void AAttack_Tower::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("On range"));
 	if (OtherActor && (OtherActor != this) && OtherComp) {
 		auto enemy = Cast<AEnemy>(OtherActor);
 		if (enemy) {
 			UE_LOG(LogTemp, Warning, TEXT("Turret range"));
 			if (!CurrentTarget) {
 				CurrentTarget = enemy;
+				StartFire();
 			}
 			UE_LOG(LogTemp, Warning, TEXT("Added Character to TArray List"));
 			EnemyTargets.Add(enemy);
@@ -110,6 +129,7 @@ void AAttack_Tower::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Ot
 				}
 				else { //otherwise there are no enemies to be aimed at
 					CurrentTarget = nullptr;
+					EndFire();
 				}
 			}
 			else {
