@@ -26,11 +26,13 @@ public:
 	void SetDamage(float damage) { Damage = damage; };
 	void FollowTarget(AEnemy* Target);
 	
-private:
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* ProjectileMovement;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ProjectileMesh;
+
 	UPROPERTY(EditAnywhere, Category = "Components")
 	TSubclassOf<UDamageType> DamageType;
 
@@ -41,8 +43,9 @@ private:
 
 	AEnemy* CurrentTarget;
 
-private:
+protected:
+
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 };
