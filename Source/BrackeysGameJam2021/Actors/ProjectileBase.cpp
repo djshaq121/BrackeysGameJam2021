@@ -20,7 +20,7 @@ AProjectileBase::AProjectileBase()
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Pojrectile Movement"));
 	ProjectileMovement->InitialSpeed = ProjectileSpeed;
 	ProjectileMovement->MaxSpeed = ProjectileSpeed;
-	ProjectileMovement->bIsHomingProjectile = true;
+	InitialLifeSpan = 3.0f;
 
 	ParticleTrail = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particle Trail"));
 	ParticleTrail->SetupAttachment(RootComponent);
