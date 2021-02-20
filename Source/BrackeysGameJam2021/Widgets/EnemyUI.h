@@ -18,6 +18,7 @@ class BRACKEYSGAMEJAM2021_API UEnemyUI : public UUserWidget
 public:
 	void SetOwner(class AEnemy* newOwner) { enemyOwner = newOwner; }
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "EnemyU")
 	void SetHealthBarVisible(bool visible);
 
 protected:

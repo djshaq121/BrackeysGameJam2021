@@ -50,6 +50,9 @@ void AEnemy::OnHealthChanged(UHealthComponent* HealthComp, float Health, float D
 		
 		bIsdead = true;
 
+		if (EnemyWidget)
+			EnemyWidget->SetHealthBarVisible(false);
+
 		GetMovementComponent()->StopMovementImmediately();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -64,7 +67,10 @@ void AEnemy::OnHealthChanged(UHealthComponent* HealthComp, float Health, float D
 		SetLifeSpan(3.0f);
 		return;
 	}
-	EnemyWidget->SetHealthBarVisible(true);
+
+	if(EnemyWidget)
+		EnemyWidget->SetHealthBarVisible(true);
+
 	GetWorldTimerManager().ClearTimer(LastTimeDamagerTimer);
 	GetWorldTimerManager().SetTimer(LastTimeDamagerTimer, this, &AEnemy::ResetHealthBarVisbible, ProgressBarHideTime, false);
 

@@ -4,8 +4,3 @@
 #include "EnemyUI.h"
 #include "Components/ProgressBar.h"
 
-void UEnemyUI::SetHealthBarVisible(bool visible)
-{
-	bHealthBarVisible = visible;
-}
-
