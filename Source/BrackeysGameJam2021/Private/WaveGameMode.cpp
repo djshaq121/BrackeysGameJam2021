@@ -7,6 +7,9 @@
 #include "../Actors/Shop.h"
 #include "../Assets/TowerData.h"
 #include "Engine/DataTable.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 
 
 AWaveGameMode::AWaveGameMode()
@@ -48,6 +51,8 @@ void AWaveGameMode::StartGame(FName levelName)
 	CurrentCurrency = CurrentLevelInfo->StartingCurrency;
 
 	EnemiesEscaped = 0;
+
+	BackgroundMusicAudioComp = UGameplayStatics::CreateSound2D(GetWorld(), PreparingWaveMusic);
 	PrepareForNextWave();
 }
 
@@ -62,6 +67,8 @@ void AWaveGameMode::PrepareForNextWave()
 	if (bGameIsOver)
 		return;
 
+	SwitchBackgroundMusic(PreparingWaveMusic);
+			
 	WaveStatus = EWaveStatus::PreparingWave;
 
 	WaveRound++;
@@ -83,6 +90,8 @@ void AWaveGameMode::StartWave()
 {
 	if (bGameIsOver)
 		return;
+
+	SwitchBackgroundMusic(ActiveWaveMusic);
 
 	WaveStatus = EWaveStatus::WaveActive;
 	UpdateWidgetOnWaveStart();
@@ -272,6 +281,18 @@ void AWaveGameMode::SkipPreparationPhase()
 		StartWave();
 	}
 
+}
+
+void AWaveGameMode::SwitchBackgroundMusic(USoundBase* newSound)
+{
+	if (!newSound)
+		return;
+
+	if (BackgroundMusicAudioComp)
+	{
+		BackgroundMusicAudioComp->SetSound(newSound);
+		BackgroundMusicAudioComp->Play();
+	}
 }
 
 void AWaveGameMode::ResetGameMode()

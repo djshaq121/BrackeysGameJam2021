@@ -145,6 +145,8 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "WaveGameMode - HUD")
 	void UpdateOnPrepareForWave();
 
+	void SwitchBackgroundMusic(USoundBase* newSound);
+
 	void ResetGameMode();
 
 	bool SpawnShop();
@@ -175,7 +177,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "WaveGameMode")
 	UDataTable* WaveDataTable;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveGameMode")
+	class USoundCue* PreparingWaveMusic;
+
 	UPROPERTY(EditDefaultsOnly, Category = "WaveGameMode")
+	class USoundCue* ActiveWaveMusic;
+
+	UPROPERTY(BlueprintReadOnly, Category = "WaveGameMode")
 	FName CurrentLevelName = "";
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WaveGameMode")
@@ -203,6 +211,8 @@ protected:
 	int32 EnemiesEscaped = 0;
 
 	bool bGameIsOver = false;
+
+	UAudioComponent* BackgroundMusicAudioComp;
 
 	
 };
