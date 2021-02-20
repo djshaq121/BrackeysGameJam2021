@@ -6,14 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "ProjectileBase.generated.h"
 
-class UProjectileMovementComponent;
 class AEnemy;
 
 UCLASS()
 class BRACKEYSGAMEJAM2021_API AProjectileBase : public AActor
 {
 	GENERATED_BODY()
-	
 public:	
 	// Sets default values for this actor's properties
 	AProjectileBase();
@@ -28,7 +26,7 @@ public:
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UProjectileMovementComponent* ProjectileMovement;
+	class UProjectileMovementComponent* ProjectileMovement;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ProjectileMesh;
@@ -52,8 +50,6 @@ protected:
 	float ProjectileSpeed = 1300;
 
 	float Damage = 50;
-
-	AEnemy* CurrentTarget;
 
 protected:
 
