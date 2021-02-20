@@ -32,7 +32,6 @@ void AProjectileBase::BeginPlay()
 	Super::BeginPlay();
 
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
-	ProjectileMovement->bIsHomingProjectile = true;
 	UGameplayStatics::PlaySoundAtLocation(this, LaunchSound, GetActorLocation());
 }
 

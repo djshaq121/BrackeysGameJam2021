@@ -17,7 +17,7 @@ void AExplosiveProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ProjectileMesh->OnComponentHit.AddDynamic(this, &AExplosiveProjectile::OnHit);
+	//ProjectileMesh->OnComponentHit.AddDynamic(this, &AExplosiveProjectile::OnHit);
 }
 
 void AExplosiveProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -29,6 +29,8 @@ void AExplosiveProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 	//If the other actor ISN't self OR Owner AND exists, then apply damage.
 	if (OtherActor && OtherActor != this && OtherActor != MyOwner) {
 		EnemiesHit.Add(OtherActor);
+		UGameplayStatics::SpawnEmitterAtLocation(this, HitParticle, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, MyOwner->GetInstigatorController(), this, DamageType);
 	}
 	
@@ -54,7 +56,6 @@ void AExplosiveProjectile::ProjectileExplosion()
 
 	if (GetWorld()->SweepMultiByChannel(HitResults, Start, End, FQuat::FQuat(), ECC_GameTraceChannel2, CollionShape, CollParam))
 	{
-		
 		for (auto& Hit : HitResults)
 		{
 			AActor* actorHit = Hit.GetActor();
@@ -65,6 +66,7 @@ void AExplosiveProjectile::ProjectileExplosion()
 			
 			if (HealthComp && !EnemiesHit.Contains(actorHit))
 			{
+				
 				EnemiesHit.Add(actorHit);
 				UGameplayStatics::ApplyDamage(actorHit, Damage * splashDamagePercent, GetOwner()->GetInstigatorController(), this, DamageType);
 			}

@@ -46,6 +46,9 @@ void AEnemy::BeginPlay()
 
 void AEnemy::OnHealthChanged(UHealthComponent* HealthComp, float Health, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
+	if (bIsdead)
+		return;
+
 	if (Health <= 0.0f && !bIsdead) {
 		
 		bIsdead = true;
