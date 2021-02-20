@@ -55,9 +55,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = "true"))
 	EAbility ability = EAbility::None;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Montage")
-	UAnimMontage* AnimMontage;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* HealthComponent;
 
