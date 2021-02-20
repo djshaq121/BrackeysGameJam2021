@@ -145,6 +145,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "WaveGameMode - HUD")
 	void UpdateOnPrepareForWave();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "WaveGameMode")
+	void OnWaveStateChange(EWaveStatus newWaveStatue);
+
 	void SwitchBackgroundMusic(USoundBase* newSound);
 
 	void ResetGameMode();
@@ -186,7 +189,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "WaveGameMode")
 	FName CurrentLevelName = "";
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WaveGameMode")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WaveGameMode | Hud")
 	TSubclassOf<class UUserWidget> HUDWaveSystemClass;
 
 	UPROPERTY(BlueprintReadOnly, Category = "WaveGameMode | Hud")
