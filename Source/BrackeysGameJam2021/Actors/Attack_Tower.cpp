@@ -24,9 +24,7 @@ void AAttack_Tower::BeginPlay()
 		SphereComponent->SetSphereRadius(TowerRange);
 	}
 
-	//GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &AAttack_Tower::CheckFireCondition, FireRate, true);
 	CurrentTarget = nullptr;
-
 }
 
 // Called every frame
@@ -47,13 +45,7 @@ void AAttack_Tower::CheckFireCondition()
 	if (!CurrentTarget)
 		return;
 
-	
-	//if (ReturnDistanceToPlayer() <= TowerRange) {
-		//UE_LOG(LogTemp, Warning, TEXT("Fire"));
-		//Fire
-	//If we have a currentTarget we know its in range
-		Fire();
-	//}
+	Fire();
 }
 
 void AAttack_Tower::RotateTurret(FVector LookAtTarget)
@@ -87,6 +79,7 @@ void AAttack_Tower::Fire()
 		FRotator SpawnRotation = ProjectileSpawnLocation->GetComponentRotation();
 
 		AProjectileBase* TempProjectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, SpawnLocation, SpawnRotation);
+		TempProjectile->FollowTarget(CurrentTarget);
 		TempProjectile->SetOwner(this);
 		TempProjectile->SetDamage(TowerDamge);
 		LastFireTime = GetWorld()->TimeSeconds;
@@ -106,12 +99,10 @@ void AAttack_Tower::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 	if (OtherActor && (OtherActor != this) && OtherComp) {
 		auto enemy = Cast<AEnemy>(OtherActor);
 		if (enemy) {
-			UE_LOG(LogTemp, Warning, TEXT("Turret range"));
 			if (!CurrentTarget) {
 				CurrentTarget = enemy;
 				StartFire();
 			}
-			UE_LOG(LogTemp, Warning, TEXT("Added Character to TArray List"));
 			EnemyTargets.Add(enemy);
 		}
 	}

@@ -7,6 +7,8 @@
 #include "ProjectileBase.generated.h"
 
 class UProjectileMovementComponent;
+class AEnemy;
+
 UCLASS()
 class BRACKEYSGAMEJAM2021_API AProjectileBase : public AActor
 {
@@ -22,6 +24,7 @@ protected:
 
 public:	
 	void SetDamage(float damage) { Damage = damage; };
+	void FollowTarget(AEnemy* Target);
 	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -35,6 +38,8 @@ private:
 	float ProjectileSpeed = 1300;
 
 	float Damage = 50;
+
+	AEnemy* CurrentTarget;
 
 private:
 	UFUNCTION()
