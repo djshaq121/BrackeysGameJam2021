@@ -48,6 +48,7 @@ void AWaveGameMode::StartGame(FName levelName)
 	}
 
 	WaveStatus = EWaveStatus::HasNotStarted;
+	OnWaveStateChange(WaveStatus);
 	CurrentCurrency = CurrentLevelInfo->StartingCurrency;
 
 	EnemiesEscaped = 0;
@@ -70,6 +71,7 @@ void AWaveGameMode::PrepareForNextWave()
 	SwitchBackgroundMusic(PreparingWaveMusic);
 			
 	WaveStatus = EWaveStatus::PreparingWave;
+	OnWaveStateChange(WaveStatus);
 
 	WaveRound++;
 	EnemiesLeft = GetTotalAmountOfEnemies(WaveRound);
@@ -94,6 +96,8 @@ void AWaveGameMode::StartWave()
 	SwitchBackgroundMusic(ActiveWaveMusic);
 
 	WaveStatus = EWaveStatus::WaveActive;
+	OnWaveStateChange(WaveStatus);
+
 	UpdateWidgetOnWaveStart();
 	CurrentWaveInfo = FetchWaveInfo(WaveRound);
 	EnemySectionIndex = 0;
@@ -113,6 +117,8 @@ void AWaveGameMode::EndWave()
 	else
 	{
 		WaveStatus = EWaveStatus::LevelWon;
+		OnWaveStateChange(WaveStatus);
+
 		bGameIsOver = true;
 
 		if (WaveSystemWidget)
@@ -228,6 +234,8 @@ void AWaveGameMode::EnemyEscaped()
 	{
 		// Game is over
 		WaveStatus = EWaveStatus::LevelLost;
+		OnWaveStateChange(WaveStatus);
+
 		bGameIsOver = true;
 
 		if (WaveSystemWidget)
@@ -298,6 +306,7 @@ void AWaveGameMode::SwitchBackgroundMusic(USoundBase* newSound)
 void AWaveGameMode::ResetGameMode()
 {
 	WaveStatus = EWaveStatus::HasNotStarted;
+	OnWaveStateChange(WaveStatus);
 	CurrentCurrency = 0;
 	EnemiesEscaped = 0;
 	WaveRound = 0;
