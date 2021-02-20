@@ -16,7 +16,7 @@ class BRACKEYSGAMEJAM2021_API AAttack_Tower : public ATower
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AProjectileBase> ProjectileClass;

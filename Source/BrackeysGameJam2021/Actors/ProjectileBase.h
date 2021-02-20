@@ -36,6 +36,16 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Components")
 	TSubclassOf<UDamageType> DamageType;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Effects", meta = (AllowPrivateAccess = "true"))
+	class UParticleSystemComponent* ParticleTrail;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	class UParticleSystem* HitParticle;
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	class USoundBase* HitSound;
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	class USoundBase* LaunchSound;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Move", meta = (AllowPrivateAccess = "true"))
 	float ProjectileSpeed = 1300;
 
