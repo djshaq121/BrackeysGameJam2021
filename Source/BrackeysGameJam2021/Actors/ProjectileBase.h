@@ -41,8 +41,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	class UParticleSystem* HitParticle;
+
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	class USoundBase* HitSound;
+
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	class USoundBase* LaunchSound;
 
