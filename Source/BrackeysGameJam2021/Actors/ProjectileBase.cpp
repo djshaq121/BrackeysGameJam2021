@@ -19,15 +19,16 @@ AProjectileBase::AProjectileBase()
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Pojrectile Movement"));
 	ProjectileMovement->InitialSpeed = ProjectileSpeed;
 	ProjectileMovement->MaxSpeed = ProjectileSpeed;
-
+	ProjectileMovement->bIsHomingProjectile = true;
 }
 
 // Called when the game starts or when spawned
 void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
+
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
-	ProjectileMovement->bIsHomingProjectile = true;
+	
 }
 
 void AProjectileBase::FollowTarget(AEnemy* Target)
