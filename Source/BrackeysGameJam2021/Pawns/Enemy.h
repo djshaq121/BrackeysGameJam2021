@@ -32,6 +32,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	bool bIsdead;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -64,7 +66,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "TowerBaseUI")
 	class UEnemyUI* EnemyWidget;
 
-	bool bIsdead;
+
 
 	FTimerHandle LastTimeDamagerTimer;
 };
