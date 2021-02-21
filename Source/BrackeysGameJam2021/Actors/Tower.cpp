@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "BrackeysGameJam2021/Components/TowerComponent.h"
 #include "../Assets/TowerData.h"
+#include "ProjectileBase.h"
 
 // Sets default values
 ATower::ATower()
@@ -33,7 +34,7 @@ ATower::ATower()
 void ATower::BeginPlay()
 {
 	Super::BeginPlay();
-	InitTowerData();
+	//InitTowerData();
 	TowerComponent = FindComponentByClass<UTowerComponent>();
 }
 
@@ -44,6 +45,12 @@ void ATower::Tick(float DeltaTime)
 
 }
 
+void ATower::SetTowerData(UTowerData* towerData)
+{
+	TowerData = towerData;
+	InitTowerData();
+}
+
 void ATower::InitTowerData()
 {
 	if (TowerData)
@@ -51,6 +58,7 @@ void ATower::InitTowerData()
 		TowerRange = TowerData->Range;
 		FireRate = TowerData->FiringRate;
 		TowerDamge = TowerData->Damage;
+		ProjectileClass = TowerData->ProjectileToSpawnClass;
 	}
 	else
 	{

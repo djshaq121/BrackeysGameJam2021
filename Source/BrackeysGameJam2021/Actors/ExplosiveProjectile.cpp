@@ -53,7 +53,7 @@ void AExplosiveProjectile::ProjectileExplosion()
 	CollParam.AddIgnoredActor(GetOwner());
 
 	DrawDebugSphere(GetWorld(), End, explosionRadius, 12, FColor::Yellow, false, 3.f, 0, 1.f);
-
+	UE_LOG(LogTemp, Warning, TEXT("Radius: %f"), explosionRadius);
 	if (GetWorld()->SweepMultiByChannel(HitResults, Start, End, FQuat::FQuat(), ECC_GameTraceChannel2, CollionShape, CollParam))
 	{
 		for (auto& Hit : HitResults)

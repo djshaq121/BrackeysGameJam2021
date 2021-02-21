@@ -18,6 +18,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
+	void SetTowerData(class UTowerData* towerData);
 
 protected:
 	void InitTowerData();
@@ -52,4 +53,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USceneComponent* ProjectileSpawnLocation;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class AProjectileBase> ProjectileClass;
 };

@@ -58,6 +58,7 @@ void AEnemy::OnHealthChanged(UHealthComponent* HealthComp, float Health, float D
 
 		GetMovementComponent()->StopMovementImmediately();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 		//Call the GameMode to update currency, write a function for that in game mode and make sure that it is updating. 
 		auto GameMode = Cast<AWaveGameMode>(GetWorld()->GetAuthGameMode());	
@@ -67,7 +68,7 @@ void AEnemy::OnHealthChanged(UHealthComponent* HealthComp, float Health, float D
 		}
 		//Enemy_BP class and call update enemies alive
 
-		SetLifeSpan(3.0f);
+		SetLifeSpan(1.5f);
 		return;
 	}
 

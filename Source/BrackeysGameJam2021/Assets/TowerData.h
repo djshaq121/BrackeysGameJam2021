@@ -21,6 +21,9 @@ public:
 	TSubclassOf<ATower> TowerActorClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<class AProjectileBase> ProjectileToSpawnClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
