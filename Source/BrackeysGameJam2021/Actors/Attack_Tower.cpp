@@ -22,9 +22,28 @@ void AAttack_Tower::BeginPlay()
 		SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AAttack_Tower::OnOverlapBegin);
 		SphereComponent->OnComponentEndOverlap.AddDynamic(this, &AAttack_Tower::OnOverlapEnd);
 		SphereComponent->SetSphereRadius(TowerRange);
+
+		TArray<AActor*> Result;
+		SphereComponent->GetOverlappingActors(Result, AEnemy::StaticClass());
+		for (auto actorFound : Result)
+		{
+			auto enemy = Cast<AEnemy>(actorFound);
+			if (!enemy && EnemyTargets.Contains(enemy))
+				return;
+
+			EnemyTargets.Add(enemy);
+		}
 	}
 
-	CurrentTarget = nullptr;
+	if (EnemyTargets.Num() > 0)
+	{
+		CurrentTarget = EnemyTargets[0];
+	}
+	else
+	{
+		CurrentTarget = nullptr;
+	}
+	
 }
 
 // Called every frame
