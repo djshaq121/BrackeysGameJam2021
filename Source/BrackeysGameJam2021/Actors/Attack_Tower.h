@@ -31,6 +31,9 @@ private:
 
 	float ReturnDistanceToPlayer();
 
+	UFUNCTION()
+	void OnEnemyHealthChange(UHealthComponent* HealthComp, float Health, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "../Assets/TowerData.h"
+#include "../Components/HealthComponent.h"
 
 
 // Called when the game starts or when spawned
@@ -23,7 +24,7 @@ void AAttack_Tower::BeginPlay()
 		SphereComponent->OnComponentEndOverlap.AddDynamic(this, &AAttack_Tower::OnOverlapEnd);
 		SphereComponent->SetSphereRadius(TowerRange);
 
-		TArray<AActor*> Result;
+	/*	TArray<AActor*> Result;
 		SphereComponent->GetOverlappingActors(Result, AEnemy::StaticClass());
 		for (auto actorFound : Result)
 		{
@@ -32,17 +33,18 @@ void AAttack_Tower::BeginPlay()
 				return;
 
 			EnemyTargets.Add(enemy);
-		}
+			
+		}*/
 	}
 
-	if (EnemyTargets.Num() > 0)
+	/*if (EnemyTargets.Num() > 0)
 	{
 		CurrentTarget = EnemyTargets[0];
 	}
 	else
 	{
 		CurrentTarget = nullptr;
-	}
+	}*/
 	
 }
 
@@ -77,6 +79,18 @@ void AAttack_Tower::RotateTurret(FVector LookAtTarget)
 
 void AAttack_Tower::StartFire()
 {
+	if (!CurrentTarget)
+		return;
+
+	if (CurrentTarget->bIsdead)
+	{
+		if (EnemyTargets.Num() > 0)
+		{
+			CurrentTarget = EnemyTargets[0];
+			return;
+		}
+
+	}
 	float FirstDelay = FMath::Max(LastFireTime + FireRate - GetWorld()->TimeSeconds, 0.0f);
 	RotateTurret(CurrentTarget->GetActorLocation());
 
@@ -110,6 +124,10 @@ float AAttack_Tower::ReturnDistanceToPlayer()
 		return 0.0f;
 
 	return FVector::Dist(CurrentTarget->GetActorLocation(), GetActorLocation());
+}
+
+void AAttack_Tower::OnEnemyHealthChange(UHealthComponent* HealthComp, float Health, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
 }
 
 void AAttack_Tower::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -147,3 +165,4 @@ void AAttack_Tower::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Ot
 		}
 	}
 }
+

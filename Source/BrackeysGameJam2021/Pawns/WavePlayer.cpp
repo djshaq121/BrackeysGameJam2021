@@ -164,7 +164,7 @@ void AWavePlayer::SkipPreparationPressed()
 void AWavePlayer::SkipPreparationReleased()
 {
 	bIsHoldingDownStartWaveAction = false;
-	if (HoldTime >= 1.5f)
+	if (HoldTime >= 0.3f)
 	{
 		AWaveGameMode* GameMode = Cast<AWaveGameMode>(GetWorld()->GetAuthGameMode());
 		if (!GameMode)
