@@ -41,7 +41,6 @@ void AAttack_Tower::Tick(float DeltaTime)
 
 void AAttack_Tower::CheckFireCondition()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Can Fire"));
 	if (!CurrentTarget)
 		return;
 

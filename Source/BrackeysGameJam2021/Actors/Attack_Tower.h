@@ -18,8 +18,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile Type", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	class UHealthComponent* HealthComponent;
 

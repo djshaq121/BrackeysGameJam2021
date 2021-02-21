@@ -141,7 +141,7 @@ void ATowerBase::SpawnTower(UTowerData* towerToSpawnData)
 			towerToSpawnData->TowerActorClass, 
 			StaticMesh->GetSocketLocation(SpawnLocationSocketName),
 			StaticMesh->GetSocketRotation(SpawnLocationSocketName));
-
+		CurrentTower->SetTowerData(towerToSpawnData);
 		EndBuildingTower();
 	}
 }
