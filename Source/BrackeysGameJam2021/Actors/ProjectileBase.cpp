@@ -40,6 +40,11 @@ void AProjectileBase::FollowTarget(AEnemy* Target)
 	ProjectileMovement->HomingTargetComponent = Target->GetRootComponent();
 }
 
+void AProjectileBase::Fire(AActor* Target)
+{
+
+}
+
 
 void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {

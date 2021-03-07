@@ -78,7 +78,8 @@ void AAttack_Tower::Fire()
 		FRotator SpawnRotation = ProjectileSpawnLocation->GetComponentRotation();
 
 		AProjectileBase* TempProjectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, SpawnLocation, SpawnRotation);
-		TempProjectile->FollowTarget(CurrentTarget);
+		//TempProjectile->FollowTarget(CurrentTarget);
+		TempProjectile->Fire(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		TempProjectile->SetOwner(this);
 		TempProjectile->SetDamage(TowerDamge);
 		LastFireTime = GetWorld()->TimeSeconds;
@@ -95,6 +96,9 @@ float AAttack_Tower::ReturnDistanceToPlayer()
 
 void AAttack_Tower::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (bUsePredictLocation)
+		return;
+
 	if (OtherActor && (OtherActor != this) && OtherComp) {
 		auto enemy = Cast<AEnemy>(OtherActor);
 		if (enemy) {
@@ -109,6 +113,9 @@ void AAttack_Tower::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 
 void AAttack_Tower::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (bUsePredictLocation)
+		return;
+
 	if (OtherActor && (OtherActor != this) && OtherComp) {
 		auto enemy = Cast<AEnemy>(OtherActor);
 		if (enemy) {

@@ -23,6 +23,8 @@ protected:
 public:	
 	void SetDamage(float damage) { Damage = damage; };
 	void FollowTarget(AEnemy* Target);
+
+	void Fire(AActor* Target);
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))

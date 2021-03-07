@@ -16,6 +16,9 @@ class BRACKEYSGAMEJAM2021_API AAttack_Tower : public ATower
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tower")
+	bool bUsePredictLocation = false;
 
 private:
 
